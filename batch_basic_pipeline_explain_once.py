@@ -115,6 +115,8 @@ def OutputSingleRecord(filepath,explanation_name,image_name,deteriation_i,prob):
 
         
 #config
+use_abs = True
+        
 api_base_url = "http://localhost:3100"
 
 dataset_name = "Traffic Congestion Image Classification (Resized)"
@@ -124,7 +126,7 @@ explanations = ["LIME","LRP","Shap"]
 
 num_images = 10
 
-result_file_path = "once_results.csv"
+result_file_path = "abs_once_results.csv"
 new_results_file = True
 
 if(new_results_file):
@@ -175,7 +177,7 @@ for explanation_name in explanations:
         
         #use explanation technique to determine important information
         attribution_map =  np.array(results_json["additional_outputs"]["attribution_map"])
-        pixel_weight_list = CreateOrderedPixelsList(attribution_map,use_abs=False)
+        pixel_weight_list = CreateOrderedPixelsList(attribution_map,use_abs=use_abs)
                 
         #deteriorate contributors
         OutputSingleRecord("abs_results.csv",explanation_name,input_image_json["image_name"],0,initial_prediction_prob)

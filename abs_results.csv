@@ -2963,3 +2963,9 @@ Shap,00368_congested.jpg,0,0.76102745533
 Shap,00035_congested.jpg,0,0.552116155624
 Shap,00612_congested.jpg,0,0.684448480606
 Shap,01859_non-congested.jpg,0,0.581797719002
+LIME,00724_congested.jpg,0,0.63661301136
+LIME,01762_non-congested.jpg,0,0.57828950882
+LIME,00435_congested.jpg,0,0.51163226366
+LIME,00960_non-congested.jpg,0,0.513664960861
+LIME,01977_non-congested.jpg,0,0.592332482338
+LIME,01198_non-congested.jpg,0,0.546808362007
