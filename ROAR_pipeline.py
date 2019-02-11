@@ -61,6 +61,11 @@ def CreatePixelListForAllTrainSet(train_x, train_y, dataset_name, model_instance
     start = time.clock()
 
     verbose_every_n_steps = 5
+    
+    reset_session_every = 1 
+    #Some explanation implementations cause slow down if they are used repeatidly on the same session.
+    #if reset_session_every is trTrueue on the explanation instance, then the session will be cleared and refreshed every 'reset_session_every' steps.
+
     #TODO: Could be parallelized
     for image_i in range(total_imgs):
         if(image_i % verbose_every_n_steps == 0):
@@ -69,14 +74,20 @@ def CreatePixelListForAllTrainSet(train_x, train_y, dataset_name, model_instance
             start = time.clock()
             print("Generating Explanation for Image: "+str(image_i)+ " to "+ str(min(image_i+verbose_every_n_steps, total_imgs))+"/" + str(total_imgs))
             print("")
-            # if(not framework_tool is None):
-                #INSTANTIATE EXPLANTION
-                # print("Refreshing explanation instance")
-                # model_load_path = model_instance.model_dir
-                # model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = {"learning_rate":model_train_params["learning_rate"]})
-                # model_instance.LoadModel(model_load_path)
-                # explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
-                
+        
+        if(image_i % reset_session_every == 0):
+            if(explanation_instance.requires_fresh_session==True):
+                if(not framework_tool is None):
+                    print("___")
+                    print("Resetting Session")
+                    model_load_path = model_instance.model_dir
+                    tf.keras.backend.clear_session()
+
+                    model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = {"learning_rate":model_train_params["learning_rate"]})
+                    model_instance.LoadModel(model_load_path)
+                    explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
+                    print("___")
+                    print("")    
         
         additional_outputs = None
         
@@ -84,23 +95,9 @@ def CreatePixelListForAllTrainSet(train_x, train_y, dataset_name, model_instance
         image_x = train_x[image_i]
         _, _, _, additional_outputs = explanation_instance.Explain(image_x,additional_args=additional_args) 
         
-        ### Reset Session To Avoid Slow Down
-        print("___")
-        print("Resetting Session")
-        model_load_path = model_instance.model_dir
-        tf.keras.backend.clear_session()
-
-        model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = {"learning_rate":model_train_params["learning_rate"]})
-        model_instance.LoadModel(model_load_path)
-        explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
-        print("___")
-        print("")
-        
-
         attribution_map =  np.array(additional_outputs["attribution_map"])
         pixel_weight_list = CreateOrderedPixelsList(attribution_map)
         
-        # pixel_weight_list = [] #TODO remove empty pixel weight list from testing
         dataset_pixel_weight_lists.append(pixel_weight_list)
 
 
@@ -163,9 +160,9 @@ if __name__ == "__main__":
     dataset_name = "Traffic Congestion Image Classification (Resized)"
     #dataset_name = "CIFAR-10"
     model_name = "vgg16_imagenet"
-    explanation_name = "Shap"
+    explanation_name = "LRP"
     experiment_id="testROAR"
-    output_path=str(experiment_id)+"_results.csv"
+    output_path=str(experiment_id)+"_"+explanation_name+"_results.csv"
     load_base_model_if_exist = True
     save_pixel_list = True
 
