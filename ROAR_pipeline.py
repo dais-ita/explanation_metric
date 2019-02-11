@@ -6,8 +6,18 @@ import json
 import cv2
 
 import sys
+import os
 
 import math
+
+import time
+
+import tensorflow as tf
+from keras import backend as K
+
+import pickle
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 ###UPDATE FRAMEWORK PATH
 framework_path = "/media/harborned/ShutUpN/repos/dais/interpretability_framework"
@@ -26,11 +36,11 @@ def CreateOrderedPixelsList(attribution_map):
             else:
                 attribution_value = attribution_map[i][j]
             pixel_weight_list.append( (i,j,attribution_value) )
-    #TODO: confirm taking the abs is correct
-    return sorted(pixel_weight_list,key=lambda x: abs(x[2]),reverse=True)
+    #TODO: confirm not taking the abs is correct
+    return sorted(pixel_weight_list,key=lambda x: x[2],reverse=True)
  
 
-def CreatePixelListForAllTrainSet(train_x, train_y, model_instance, explanation_instance,additional_args=None):
+def CreatePixelListForAllTrainSet(train_x, train_y, dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=None):
     #default arguments for various explanation techniques 
     if(additional_args is None):
         additional_args = {
@@ -41,23 +51,56 @@ def CreatePixelListForAllTrainSet(train_x, train_y, model_instance, explanation_
         "train_x":train_x,
         "train_y":train_y,
         "max_n_influence_images":9,
+        "dataset_name":dataset_name,
+        "background_image_pool":train_x
         }
 
-    dataset_pixel_weight_lists = []
-
+    
     total_imgs = len(train_x)
+    dataset_pixel_weight_lists = [] 
+    start = time.clock()
+
+    verbose_every_n_steps = 5
     #TODO: Could be parallelized
     for image_i in range(total_imgs):
-        if(image_i % 100 == 0):
-            print("Generating Explanation for Image: "+str(image_i)+ "/" + str(total_imgs))
+        if(image_i % verbose_every_n_steps == 0):
+            print time.clock() - start
+
+            start = time.clock()
+            print("Generating Explanation for Image: "+str(image_i)+ " to "+ str(min(image_i+verbose_every_n_steps, total_imgs))+"/" + str(total_imgs))
             print("")
-            
+            # if(not framework_tool is None):
+                #INSTANTIATE EXPLANTION
+                # print("Refreshing explanation instance")
+                # model_load_path = model_instance.model_dir
+                # model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = {"learning_rate":model_train_params["learning_rate"]})
+                # model_instance.LoadModel(model_load_path)
+                # explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
+                
+        
+        additional_outputs = None
+        
+        
         image_x = train_x[image_i]
-        explanation_image, explanation_text, prediction, additional_outputs = explanation_instance.Explain(image_x,additional_args=additional_args) 
+        _, _, _, additional_outputs = explanation_instance.Explain(image_x,additional_args=additional_args) 
+        
+        ### Reset Session To Avoid Slow Down
+        print("___")
+        print("Resetting Session")
+        model_load_path = model_instance.model_dir
+        tf.keras.backend.clear_session()
+
+        model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = {"learning_rate":model_train_params["learning_rate"]})
+        model_instance.LoadModel(model_load_path)
+        explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
+        print("___")
+        print("")
+        
 
         attribution_map =  np.array(additional_outputs["attribution_map"])
         pixel_weight_list = CreateOrderedPixelsList(attribution_map)
-
+        
+        # pixel_weight_list = [] #TODO remove empty pixel weight list from testing
         dataset_pixel_weight_lists.append(pixel_weight_list)
 
 
@@ -74,16 +117,17 @@ def DeteriateImage(image,image_pixel_list,dataset_mean,deteriation_start_index,d
 
 
 def DeteriateDataset(Xs,deteriation_proportion,dataset_pixel_lists,deteriation_step,deteriation_index_step,dataset_mean):
-    deteriation_start_index = deteriation_step*deteriation_index_step
-    deteriation_end = min(len(dataset_pixel_lists[0])-1, (deteriation_step+1)*deteriation_index_step)
+    deteriation_start_index = int(deteriation_step*deteriation_index_step)
+    deteriation_end = int(min(len(dataset_pixel_lists[0])-1, (deteriation_step+1)*deteriation_index_step))
     
     modified_images = []
     
     total_imgs = len(Xs)
+    verbose_every_n_steps = 50
     #TODO: Could be parallelized
     for x_i in range(total_imgs):
-        if(x_i % 100 == 0):
-            print("Generating Explanation for Image: "+str(x_i)+ "/" + str(total_imgs))
+        if(x_i % verbose_every_n_steps == 0):
+            print("Deteriating Image: "+str(x_i)+ " to "+ str(min(x_i+verbose_every_n_steps, total_imgs))+"/" + str(total_imgs))
             print("")
         new_image = DeteriateImage(Xs[x_i], dataset_pixel_lists[x_i],dataset_mean,deteriation_start_index,deteriation_end)
         modified_images.append(new_image)
@@ -92,7 +136,7 @@ def DeteriateDataset(Xs,deteriation_proportion,dataset_pixel_lists,deteriation_s
 
 
 def CreateChildModel(framework_tool, deteriation_proportion, model_train_params):
-    model_save_path_suffix = "_"+model_train_params["experiment_id"]+"_"+str(deteriation_proportion+1)
+    model_save_path_suffix = "_"+model_train_params["experiment_id"]+"_"+str(deteriation_proportion)
     model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = {"learning_rate":model_train_params["learning_rate"]})
     
     return model_instance
@@ -108,14 +152,22 @@ def SaveExperimentResults(output_path,performance_results):
         f.write(output_string[:-1])
 
 
+def SavePixelList(dataset_name,explanation_name,pixel_lists):
+    pixel_out_path = dataset_name+"_"+explanation_name+str(int(time.time()))+".pkl"
+    with open(pixel_out_path,"wb") as f:
+        pickle.dump(pixel_lists, f)
+    
+
 if __name__ == "__main__":
     #ARGS    
     dataset_name = "Traffic Congestion Image Classification (Resized)"
     #dataset_name = "CIFAR-10"
     model_name = "vgg16_imagenet"
-    explanation_name = "LRP"
+    explanation_name = "Shap"
     experiment_id="testROAR"
     output_path=str(experiment_id)+"_results.csv"
+    load_base_model_if_exist = True
+    save_pixel_list = True
 
     framework_tool = DaisFrameworkTool(explicit_framework_base_path=framework_path)
 
@@ -140,13 +192,13 @@ if __name__ == "__main__":
 
     #validate on up to 256 images only
     source = "validation"
-    val_x, val_y = dataset_tool.GetBatch(batch_size = 512,even_examples=True, y_labels_to_use=label_names, split_batch = True,split_one_hot = True, batch_source = source)
+    val_x, val_y = dataset_tool.GetBatch(batch_size = 256,even_examples=True, y_labels_to_use=label_names, split_batch = True,split_one_hot = True, batch_source = source)
     print("num validation examples: "+str(len(val_x)))
 
 
     #load train data
     source = "test"
-    test_x, test_y = dataset_tool.GetBatch(batch_size = 512,even_examples=True, y_labels_to_use=label_names, split_batch = True,split_one_hot = True, batch_source = source)
+    test_x, test_y = dataset_tool.GetBatch(batch_size = 256,even_examples=True, y_labels_to_use=label_names, split_batch = True,split_one_hot = True, batch_source = source)
     print("num test examples: "+str(len(test_x)))
     
     
@@ -171,14 +223,18 @@ if __name__ == "__main__":
 
 
 
-    #TRAIN MODEL
-    training_stats = framework_tool.TrainModel(model_instance,train_x, train_y, model_train_params["batch_size"], model_train_params["num_train_steps"], val_x= val_x, val_y=val_y)
+    #TRAIN OR LOAD MODEL
+    model_load_path = model_instance.model_dir
+    if(os.path.exists(model_load_path) == True and load_base_model_if_exist == True):
+        model_instance.LoadModel(model_load_path)
+    else:
+        training_stats = framework_tool.TrainModel(model_instance,train_x, train_y, model_train_params["batch_size"], model_train_params["num_train_steps"], val_x= val_x, val_y=val_y)
 
 
     #INITAL TEST of MODEL
     test_results = [] # of the form: (proportion_of_deteriated_pixels, test_metrics) . test_metrics = [loss, accuracy] .
 
-
+        
     baseline_accuracy = model_instance.EvaluateModel(test_x, test_y, model_train_params["batch_size"])
     print("metrics", model_instance.model.metrics_names)
     print("baseline_accuracy",baseline_accuracy)
@@ -191,14 +247,19 @@ if __name__ == "__main__":
 
     deteriation_rate = 0.05
     num_pixels = dataset_json["image_y"] * dataset_json["image_x"]
-    deteriation_index_step = math.ceil(num_pixels * deteriation_rate)
+    deteriation_index_step = int(math.ceil(num_pixels * deteriation_rate))
     num_deteriation_steps = 20
     
 
-    dataset_pixel_lists = CreatePixelListForAllTrainSet(train_x, train_y, model_instance, explanation_instance,additional_args=None)
-    
+    dataset_pixel_lists = CreatePixelListForAllTrainSet(train_x, train_y,dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=framework_tool)
+    if(save_pixel_list):
+        print("saving pixel lists")
+        SavePixelList(dataset_name,explanation_name,dataset_pixel_lists)
+
     #TODO: Could be parallelized
     for deteriation_step in range(num_deteriation_steps):
+        print("")
+        print("______")
         print("Starting Deteriation Step: "+str(deteriation_step))
         print("")
         #remove the deteriation_index_step * deteriation_step pixels from each image of train
