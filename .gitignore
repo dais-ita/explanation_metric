@@ -111,4 +111,4 @@ venv.bak/
 *.pickle
 
 #google repo
-google_interpretability_benchmark
+/google_interpretability_benchmark
