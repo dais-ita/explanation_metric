@@ -150,21 +150,34 @@ def SaveExperimentResults(output_path,performance_results):
 
 
 def SavePixelList(dataset_name,explanation_name,pixel_lists):
-    pixel_out_path = dataset_name+"_"+explanation_name+str(int(time.time()))+".pkl"
+    pixel_out_path = dataset_name+"_"+explanation_name+"_"+str(int(time.time()))+".pkl"
     with open(pixel_out_path,"wb") as f:
         pickle.dump(pixel_lists, f)
+
+
+def LoadPixelListFromPath(pixel_list_path):
+    pixel_list = None
+
+    with open(pixel_list_path,"rb") as f:
+        pixel_list = pickle.load(f)    
     
+    return pixel_list
+
+
 
 if __name__ == "__main__":
     #ARGS    
     dataset_name = "Traffic Congestion Image Classification (Resized)"
-    #dataset_name = "CIFAR-10"
+    dataset_name = "CIFAR-10"
     model_name = "vgg16_imagenet"
     explanation_name = "LRP"
-    experiment_id="testROAR"
+    experiment_id="testROAR_"+dataset_name
     output_path=str(experiment_id)+"_"+explanation_name+"_results.csv"
     load_base_model_if_exist = True
     save_pixel_list = True
+
+    load_from_pixel_list_path = ""
+
 
     framework_tool = DaisFrameworkTool(explicit_framework_base_path=framework_path)
 
@@ -205,9 +218,9 @@ if __name__ == "__main__":
 
     #INSTANTIATE MODEL
     model_train_params ={
-    "learning_rate": 0.001
+    "learning_rate": 0.0001
     ,"batch_size":128
-    ,"num_train_steps":160
+    ,"num_train_steps":200
     ,"experiment_id":experiment_id
     }
 
@@ -247,11 +260,26 @@ if __name__ == "__main__":
     deteriation_index_step = int(math.ceil(num_pixels * deteriation_rate))
     num_deteriation_steps = 20
     
+    dataset_pixel_lists = None
 
-    dataset_pixel_lists = CreatePixelListForAllTrainSet(train_x, train_y,dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=framework_tool)
-    if(save_pixel_list):
-        print("saving pixel lists")
-        SavePixelList(dataset_name,explanation_name,dataset_pixel_lists)
+    if(load_from_pixel_list_path != ""):
+        print("Loading Pixel List")
+        dataset_pixel_lists = LoadPixelListFromPath(load_from_pixel_list_path)
+        print("Pixel List Loaded")
+    else:
+        print("Creating Pixel List")
+        dataset_pixel_lists = CreatePixelListForAllTrainSet(train_x, train_y,dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=framework_tool)
+        if(save_pixel_list):
+            print("saving pixel lists")
+            SavePixelList(dataset_name,explanation_name,dataset_pixel_lists)
+
+
+    #RESIZE IMAGES IF NEEDED
+    #Images may need resizing for model. If that's the case, the framework would have done this automatically during training and explanation generations. 
+    #we need to do this manually before deteriation step, the framework model class can do this for us. 
+    train_x_deteriated = model_instance.CheckInputArrayAndResize(train_x_deteriated,model_instance.min_height,model_instance.min_width)
+
+
 
     #TODO: Could be parallelized
     for deteriation_step in range(num_deteriation_steps):
