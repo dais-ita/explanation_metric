@@ -23,6 +23,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 ###UPDATE FRAMEWORK PATH
 framework_path = "/media/harborned/ShutUpN/repos/dais/interpretability_framework"
+framework_path = "/Users/harborned/Documents/repos/dais/interpretability_framework"
+
 sys.path.append(framework_path)
 
 from DaisFrameworkTool import DaisFrameworkTool
@@ -71,7 +73,7 @@ def CreatePixelListForAllTrainSet(train_x, train_y, dataset_name, model_instance
     #TODO: Could be parallelized
     for image_i in range(total_imgs):
         if(image_i % verbose_every_n_steps == 0):
-            print time.clock() - start
+            print(time.clock() - start)
 
             start = time.clock()
             print("Generating Explanation for Image: "+str(image_i)+ " to "+ str(min(image_i+verbose_every_n_steps, total_imgs))+"/" + str(total_imgs))
@@ -185,6 +187,9 @@ if __name__ == "__main__":
     load_base_model_if_exist = True
     save_pixel_list = True
 
+    deteriation_rate = 0.05
+    num_deteriation_steps = 20
+
     load_from_pixel_list_path = ""
 
 
@@ -264,10 +269,9 @@ if __name__ == "__main__":
     train_x_deteriated = np.copy(train_x)
 
 
-    deteriation_rate = 0.05
+    
     num_pixels = dataset_json["image_y"] * dataset_json["image_x"]
     deteriation_index_step = int(math.ceil(num_pixels * deteriation_rate))
-    num_deteriation_steps = 20
     
     dataset_pixel_lists = None
 
