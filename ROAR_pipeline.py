@@ -17,6 +17,8 @@ from keras import backend as K
 
 import pickle
 
+from numba import cuda
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 ###UPDATE FRAMEWORK PATH
@@ -81,11 +83,18 @@ def CreatePixelListForAllTrainSet(train_x, train_y, dataset_name, model_instance
                     print("___")
                     print("Resetting Session")
                     model_load_path = model_instance.model_dir
+                    del model_instance
+                    del explanation_instance
+                    tf.reset_default_graph() 
                     tf.keras.backend.clear_session()
-
+                    # print("Releasing GPU")
+                    # cuda.select_device(0)
+                    # cuda.close()
+                    # print("GPU released")
                     model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = {"learning_rate":model_train_params["learning_rate"]})
                     model_instance.LoadModel(model_load_path)
                     explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
+                    print("session restarted")
                     print("___")
                     print("")    
         
