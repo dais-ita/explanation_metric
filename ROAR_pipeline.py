@@ -427,7 +427,11 @@ if __name__ == "__main__":
         training_stats = framework_tool.TrainModel(child_model,train_x_deteriated, train_y, model_train_params["batch_size"], model_train_params["num_train_steps"], val_x= val_x, val_y=val_y)
 
         #retest on test
-        new_accuracy = child_model.EvaluateModel(test_x, test_y, model_train_params["batch_size"])
+        if(normalise_data):
+            new_accuracy = child_model.EvaluateModel(dataset_tool.StandardizeImages(test_x), test_y, model_train_params["batch_size"])
+        else:
+            new_accuracy = child_model.EvaluateModel(test_x, test_y, model_train_params["batch_size"])
+            
         print("metrics", model_instance.model.metrics_names)
         print("new accuracy",new_accuracy)
 
