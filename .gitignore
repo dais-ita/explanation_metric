@@ -112,3 +112,11 @@ venv.bak/
 
 #google repo
 /google_interpretability_benchmark
+
+/deteriorated_images
+
+#ignore results files
+*.csv
+
+#ignore lock files
+.~lock*
