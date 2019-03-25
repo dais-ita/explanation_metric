@@ -19,6 +19,9 @@ import pickle
 
 from numba import cuda
 
+import random
+
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 ###UPDATE FRAMEWORK PATH
@@ -30,6 +33,9 @@ sys.path.append(framework_path)
 from DaisFrameworkTool import DaisFrameworkTool
 
 
+np.random.seed(42)
+tf.set_random_seed(1234)
+random.seed(1234)
 
 
 #PIXEL LIST FUNCTIONS
@@ -143,7 +149,7 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
 
 
 def SavePixelList(dataset_name,explanation_name,pixel_lists):
-    pixel_out_path = dataset_name+"_"+explanation_name+"_"+str(int(time.time()))+".pkl"
+    pixel_out_path = os.path.join("pixel_lists",dataset_name+"_"+explanation_name+"_"+str(int(time.time()))+".pkl")
     with open(pixel_out_path,"wb") as f:
         pickle.dump(pixel_lists, f)
 
@@ -202,10 +208,17 @@ def PerturbImage(image,image_pixel_list,perturbation_function,deterioration_star
     return image
 
 
-def PerturbData(Xs,deterioration_proportion,dataset_pixel_lists,deterioration_step,deterioration_index_step,perturbation_function):
-    deterioration_start_index = int(deterioration_step*deterioration_index_step)
-    deterioration_end = int(min(len(dataset_pixel_lists[0]), (deterioration_step+1)*deterioration_index_step))
-    
+def PerturbData(Xs,deterioration_proportion,dataset_pixel_lists,deterioration_step,deterioration_index_step,perturbation_function, deletion_game=True, total_num_deterioration_steps=20):
+    if(deletion_game):
+        print("Using deletion game metric")
+        deterioration_start_index = int(deterioration_step*deterioration_index_step)
+        deterioration_end = int(min(len(dataset_pixel_lists[0]), (deterioration_step+1)*deterioration_index_step))
+    else:
+        print("Using preservation game metric")
+        deterioration_start_index = int((total_num_deterioration_steps - (deterioration_step+1)) * deterioration_index_step)
+        deterioration_end = int(min(len(dataset_pixel_lists[0]), (total_num_deterioration_steps - deterioration_step) * deterioration_index_step))
+
+
     modified_images = []
     
     total_imgs = len(Xs)
@@ -236,7 +249,7 @@ def CreateConstantPeturbFunction(pixel_constant_values):
 def CreateChildModel(framework_tool, deterioration_proportion, model_train_params):
     model_save_path_suffix = "_"+model_train_params["experiment_id"]+"_"+str(deterioration_proportion)
     model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = {"learning_rate":model_train_params["learning_rate"]})
-    
+                     
     return model_instance
 
 
@@ -263,22 +276,30 @@ if __name__ == "__main__":
     model_name = "vgg16"
     normalise_data = True
     
-    explanation_name = "LIME"
-    
+    explanation_names = ["LIME","Shap","random"]
+    load_from_pixel_list_path_dict={
+        "LIME": os.path.join("pixel_lists","TRAIN_testROAR_CIFAR-10_LIME_1553461654.pkl")
+        # ,"Shap": ""
+        # ,"random": ""
+    }
+
     experiment_id="testROAR_"+dataset_name
-    output_path=str(experiment_id)+"_"+explanation_name+"_results.csv"
     load_base_model_if_exist = True
     save_pixel_list = True
 
+    use_deletion_game = False
     deterioration_rate = 0.05
     num_deterioration_steps = 20
 
+    #SINGLE EXPLANATION VARIABLES
+    # explanation_name = "LIME"
+    
+    # output_path=str(experiment_id)+"_"+explanation_name+"_results.csv"
+    # generate_random_pixel_list = False
+    # if(explanation_name == "random"):
+    #     generate_random_pixel_list = True
 
-    generate_random_pixel_list = False
-    if(explanation_name == "random"):
-        generate_random_pixel_list = True
-
-    load_from_pixel_list_path = "" #make sure to load training set
+    # load_from_pixel_list_path = "" #make sure to load a TRAINing set
 
 
     framework_tool = DaisFrameworkTool(explicit_framework_base_path=framework_path)
@@ -291,17 +312,14 @@ if __name__ == "__main__":
 
    
     #Train
-    #TODO: Add optional normalisation
-    if(normalise_data):
-        denomralise_function = dataset_tool.CreateDestandardizeFuntion()
-
+    
     #LOAD DATA
     #load all train images as model handles batching
     print("load training data")
     print("")
     source = "train"
     #TODO change batch sizes to -1 , 256 , 256
-    train_x, train_y = dataset_tool.GetBatch(batch_size = -1,even_examples=True, y_labels_to_use=label_names, split_batch = True, split_one_hot = True, batch_source = source)
+    train_x, train_y = dataset_tool.GetBatch(batch_size = -1,even_examples=True, y_labels_to_use=label_names, split_batch = True, split_one_hot = True, batch_source = source, shuffle=False)
     print("num train examples: "+str(len(train_x)))
 
 
@@ -313,10 +331,20 @@ if __name__ == "__main__":
 
     #load train data
     source = "test"
-    test_x, test_y = dataset_tool.GetBatch(batch_size = -1,even_examples=True, y_labels_to_use=label_names, split_batch = True,split_one_hot = True, batch_source = source)
+    test_x, test_y = dataset_tool.GetBatch(batch_size = -1,even_examples=True, y_labels_to_use=label_names, split_batch = True,split_one_hot = True, batch_source = source, shuffle=False)
     print("num test examples: "+str(len(test_x)))
     
+    print("First and Last Images in Data:")
+    print("Train:")
+    print(dataset_tool.live_training[0])
+    print(dataset_tool.live_training[-1])
+    print("")
+    print("Test:")
+    print(dataset_tool.live_test[0])
+    print(dataset_tool.live_test[-1])
+    print("")
     
+
     print("calculating dataset mean")
     dataset_mean = dataset_tool.GetMean()
     print(dataset_mean)
@@ -337,9 +365,7 @@ if __name__ == "__main__":
     model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = {"learning_rate":model_train_params["learning_rate"]})
     
 
-    #INSTANTIATE EXPLANTION
-    explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
-
+    
 
     #TRAIN OR LOAD MODEL
     model_load_path = model_instance.model_dir
@@ -352,89 +378,131 @@ if __name__ == "__main__":
         else:
             training_stats = framework_tool.TrainModel(model_instance,train_x, train_y, model_train_params["batch_size"], model_train_params["num_train_steps"], val_x= val_x, val_y=val_y)
 
-
-    #INITAL TEST of MODEL
-    test_results = [] # of the form: (proportion_of_deteriated_pixels, test_metrics) . test_metrics = [loss, accuracy] .
-
-    if(normalise_data):
-        baseline_accuracy = model_instance.EvaluateModel(dataset_tool.StandardizeImages(test_x), test_y, model_train_params["batch_size"])
-    else:
-        baseline_accuracy = model_instance.EvaluateModel(test_x, test_y, model_train_params["batch_size"])
-
-    print("metrics", model_instance.model.metrics_names)
-    print("baseline_accuracy",baseline_accuracy)
-
-    test_results.append((0,baseline_accuracy))
-
-    #CREATE WORKING COPY OF TRAIN SET
-    train_x_deteriated = np.copy(train_x)
-
-
-    
-    num_pixels = dataset_json["image_y"] * dataset_json["image_x"]
-
-    #RESIZE IMAGES IF NEEDED
-    #Images may need resizing for model. If that's the case, the framework would have done this automatically during training and explanation generations. 
-    #we need to do this manually before deterioration step, the framework model class can do this for us. 
-    train_x_deteriated = model_instance.CheckInputArrayAndResize(train_x_deteriated,model_instance.min_height,model_instance.min_width)
-
-    num_pixels_in_padded = train_x_deteriated[0].shape[:-1][0] * train_x_deteriated[0].shape[:-1][1]
-    deterioration_index_step = int(math.ceil(num_pixels * deterioration_rate))
-    
-
-    
-    dataset_pixel_lists = None
-
-    pixel_lists = []
-    
-    if(generate_random_pixel_list):
-        print("Generating Random Pixel List")
-        pixel_lists = GenerateRandomPixelWeights(train_x_deteriated.shape)
-        if(save_pixel_list):
-                print("saving pixel lists")
-                SavePixelList("TRAIN_"+dataset_name,explanation_name,pixel_lists)
-
-    else:
-        if(load_from_pixel_list_path != ""):
-            print("Loading Pixel List")
-            pixel_lists = LoadPixelListFromPath(load_from_pixel_list_path)
-            print("Pixel List Loaded")
-        else:
-            print("Creating Pixel List")
-            if(normalise_data):
-                pixel_lists = CreatePixelListForAllData(dataset_tool.StandardizeImages(train_x_deteriated), test_y, dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=framework_tool, train_x=dataset_tool.StandardizeImages(train_x), train_y=train_y, denormalise_function=denormalise_function)
-            else:
-                pixel_lists = CreatePixelListForAllData(train_x_deteriated, test_y, dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=framework_tool, train_x=train_x, train_y=train_y)
-                
-            if(save_pixel_list):
-                print("saving pixel lists")
-                SavePixelList("TRAIN_"+dataset_name,explanation_name,pixel_lists)
-
-
-    #TODO: Could be parallelized
-    for deterioration_step in range(num_deterioration_steps):
-        print("")
-        print("______")
-        print("Starting Deteriation Step: "+str(deterioration_step))
-        print("")
-        #remove the deterioration_index_step * deterioration_step pixels from each image of train
-        train_x_deteriated = DeteriateDataset(train_x_deteriated,deterioration_rate,dataset_pixel_lists,deterioration_step,deterioration_index_step,dataset_mean)
-
-        #instantiate child model        
-        child_model = CreateChildModel(framework_tool, deterioration_rate*(deterioration_step+1),model_train_params)
+    #FOR EACH EXPLANATION
+    for explanation_name in explanation_names:
+        print("Generating Results for: " + explanation_name)
+        load_from_pixel_list_path = ""
         
-        #retrain on modified train
-        training_stats = framework_tool.TrainModel(child_model,train_x_deteriated, train_y, model_train_params["batch_size"], model_train_params["num_train_steps"], val_x= val_x, val_y=val_y)
+        if(explanation_name in load_from_pixel_list_path_dict):
+            load_from_pixel_list_path = load_from_pixel_list_path_dict[explanation_name]
 
-        #retest on test
+        output_path=os.path.join("results",str(experiment_id)+"_"+explanation_name+"_results.csv")
+        
+        generate_random_pixel_list = False
+        if(explanation_name == "random" and load_from_pixel_list_path == ""):
+            generate_random_pixel_list = True
+        
+        #INSTANTIATE EXPLANTION
+        explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
+
+
+        #INITAL TEST of MODEL
+        test_results = [] # of the form: (proportion_of_deteriated_pixels, test_metrics) . test_metrics = [loss, accuracy] .
+
         if(normalise_data):
-            new_accuracy = child_model.EvaluateModel(dataset_tool.StandardizeImages(test_x), test_y, model_train_params["batch_size"])
+            baseline_accuracy = model_instance.EvaluateModel(dataset_tool.StandardizeImages(test_x), test_y, model_train_params["batch_size"])
         else:
-            new_accuracy = child_model.EvaluateModel(test_x, test_y, model_train_params["batch_size"])
-            
-        print("metrics", model_instance.model.metrics_names)
-        print("new accuracy",new_accuracy)
+            baseline_accuracy = model_instance.EvaluateModel(test_x, test_y, model_train_params["batch_size"])
 
-        test_results.append( (deterioration_rate*(deterioration_step+1),new_accuracy) )
+        print("metrics", model_instance.model.metrics_names)
+        print("baseline_accuracy",baseline_accuracy)
+
+        test_results.append((0,baseline_accuracy))
+
+        #CREATE WORKING COPY OF TRAIN SET
+        x_deteriated = np.copy(train_x)
+
+
         
-    SaveExperimentResults(output_path,test_results)
+        num_pixels = dataset_json["image_y"] * dataset_json["image_x"]
+
+        #RESIZE IMAGES IF NEEDED
+        #Images may need resizing for model. If that's the case, the framework would have done this automatically during training and explanation generations. 
+        #we need to do this manually before deterioration step, the framework model class can do this for us. 
+        x_deteriated = model_instance.CheckInputArrayAndResize(x_deteriated,model_instance.min_height,model_instance.min_width)
+
+        num_pixels_in_padded = x_deteriated[0].shape[:-1][0] * x_deteriated[0].shape[:-1][1]
+        deterioration_index_step = int(math.ceil(num_pixels * deterioration_rate))
+        
+
+        
+        
+        pixel_lists = []
+        
+        if(generate_random_pixel_list):
+            print("Generating Random Pixel List")
+            pixel_lists = GenerateRandomPixelWeights(x_deteriated.shape)
+            if(save_pixel_list):
+                    print("saving pixel lists")
+                    SavePixelList("TRAIN_"+experiment_id,explanation_name,pixel_lists)
+
+        else:
+            if(load_from_pixel_list_path != ""):
+                print("Loading Pixel List")
+                pixel_lists = LoadPixelListFromPath(load_from_pixel_list_path)
+                print("Pixel List Loaded")
+            else:
+                print("Creating Pixel List")
+                if(normalise_data):
+                    pixel_lists = CreatePixelListForAllData(dataset_tool.StandardizeImages(x_deteriated), test_y, dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=framework_tool, train_x=dataset_tool.StandardizeImages(train_x), train_y=train_y, denormalise_function=denormalise_function)
+                else:
+                    pixel_lists = CreatePixelListForAllData(x_deteriated, test_y, dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=framework_tool, train_x=train_x, train_y=train_y)
+                    
+                if(save_pixel_list):
+                    print("saving pixel lists")
+                    SavePixelList("TRAIN_"+experiment_id,explanation_name,pixel_lists)
+
+
+        perturbation_function = CreateConstantPeturbFunction(dataset_mean)
+
+
+        #TODO: Could be parallelized
+        #TODO: Do we need to recreate pixel list on detriorated images (artifacting / new use of redundant features)
+        for deterioration_step in range(num_deterioration_steps):
+            deterioration_output_path = str(experiment_id)+"_"+explanation_name+"_"+format(deterioration_step, '05d')+"_deterioration_results.csv"
+            deterioration_output_path = os.path.join("results","image_results",deterioration_output_path)
+                
+            deterioration_output_string = ""
+            print("")
+            print("______")
+            print("Starting deterioration Step: "+str(deterioration_step))
+            print("")
+            
+            #remove the deterioration_index_step * deterioration_step pixels from each image of train
+            x_deteriated = PerturbData(x_deteriated,deterioration_rate,pixel_lists,deterioration_step,deterioration_index_step,perturbation_function, deletion_game=use_deletion_game, total_num_deterioration_steps=num_deterioration_steps)
+                
+            # x_deteriated = DeteriateDataset(x_deteriated,deterioration_rate,pixel_lists,deterioration_step,deterioration_index_step,dataset_mean)
+
+            #instantiate child model        
+            child_model = CreateChildModel(framework_tool, deterioration_rate*(deterioration_step+1),model_train_params)
+            
+            #retrain on modified train
+            if(normalise_data):
+                training_stats = framework_tool.TrainModel(child_model,dataset_tool.StandardizeImages(x_deteriated), train_y, model_train_params["batch_size"], model_train_params["num_train_steps"], val_x= dataset_tool.StandardizeImages(val_x), val_y=val_y)
+                x_prediction_probs, x_predictions = child_model.Predict(dataset_tool.StandardizeImages(test_x), return_prediction_scores = True)
+            else:
+                training_stats = framework_tool.TrainModel(child_model,x_deteriated, train_y, model_train_params["batch_size"], model_train_params["num_train_steps"], val_x= val_x, val_y=val_y)
+                x_prediction_probs, x_predictions = child_model.Predict(test_x, return_prediction_scores = True)
+
+
+            for img_i in range(len(x_prediction_probs)):
+                prediction_probs = [str(prob) for prob in list(x_prediction_probs[img_i])]
+                prediction = x_predictions[img_i]
+
+                deterioration_output_string += ",".join(prediction_probs) +","+str(prediction) +","+str(np.argmax(test_y[img_i])) +"\n"
+                
+            with open(deterioration_output_path, "w") as f:
+                f.write(deterioration_output_string[:-1])
+                
+            #retest on test
+            if(normalise_data):
+                new_accuracy = child_model.EvaluateModel(dataset_tool.StandardizeImages(test_x), test_y, model_train_params["batch_size"])
+            else:
+                new_accuracy = child_model.EvaluateModel(test_x, test_y, model_train_params["batch_size"])
+                
+            print("metrics", model_instance.model.metrics_names)
+            print("new accuracy",new_accuracy)
+
+            test_results.append( (deterioration_rate*(deterioration_step+1),new_accuracy) )
+            
+        SaveExperimentResults(output_path,test_results)
