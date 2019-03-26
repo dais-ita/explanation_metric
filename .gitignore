@@ -116,7 +116,8 @@ venv.bak/
 /deteriorated_images
 
 #ignore results files
-*.csv
+results
 
 #ignore lock files
 .~lock*
+

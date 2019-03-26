@@ -1,0 +1,76 @@
+body
+{
+  background-color: #d2d2d2 !important;
+}
+
+.body-content 
+{
+  padding-top:20px;
+  padding-bottom: 20px;
+
+  background-color: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+ul {
+
+}
+
+#degradation_images_container
+{
+	background-color: white;
+	padding:20px;
+}
+.degradation_batch_container
+{
+	margin-top: 40px;
+}
+
+.degradation_row
+{
+	margin-top: 20px;
+}
+
+.deteriorated_image
+{
+	width:100%;
+}
+
+#metric_results_table th,#metric_results_table td
+{
+	padding:0px;
+	text-align: center;
+}
+
+
+#metric_results_table
+{
+	max-width:2000px;
+}
+
+.results_graph
+{
+	max-width: 1500px;
+	max-width: 100%;
+}
+
+.retrain_preservation, .retrain_deletion
+{
+	display: none;
+}
+
+
+
+
+@media screen and (max-width: 1024px) {
+ 
+
+}
+
+
+@media screen and (max-width: 500px) {
+
+
+}
+
+ 
