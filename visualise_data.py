@@ -219,7 +219,6 @@ def GetResultsDict(experiment_id, dataset_name, explanation_names,results_dir="r
                 file_path = os.path.join(results_dir,"image_results",file_name)
 
                 results_string = ""
-
                 with open(file_path, "r") as f:
                     results_string = f.read()
                 
@@ -255,12 +254,13 @@ def AggregatePredictionStrengths(explanation_names, image_results_dict):
 
 if __name__ == "__main__":
     experiment_id = "testROAR_PRESERVATION"
+    experiment_id = "testROAR"
     dataset_name = "CIFAR-10"
 
     explanation_names = [
         "LIME"
-        # ,"Shap"
-        # ,"random"
+        ,"Shap"
+        ,"random"
         ]
 
     image_results_dict = GetResultsDict(experiment_id,dataset_name,explanation_names)

@@ -222,7 +222,7 @@ def PerturbData(Xs,deterioration_proportion,dataset_pixel_lists,deterioration_st
     modified_images = []
     
     total_imgs = len(Xs)
-    verbose_every_n_steps = 100
+    verbose_every_n_steps = 500
     #TODO: Could be parallelized
     for x_i in range(total_imgs):
         if(x_i % verbose_every_n_steps == 0):
@@ -276,18 +276,18 @@ if __name__ == "__main__":
     model_name = "vgg16"
     normalise_data = True
     
-    explanation_names = ["Shap","random"] #LIME
+    explanation_names = ["random","Shap"] #"LIME","Shap"
     load_from_pixel_list_path_dict={
         "LIME": os.path.join("pixel_lists","TRAIN_testROAR_CIFAR-10_LIME_1553461654.pkl")
-        # ,"Shap": ""
-        # ,"random": ""
+        ,"Shap": "TRAIN_testROAR_CIFAR-10_Shap_1553686507.pkl"
+        ,"random": "TRAIN_testROAR_CIFAR-10_random_1553734921.pkl"
     }
 
-    experiment_id="testROAR_"+dataset_name
+    experiment_id="testROAR_PRESERVATION_"+dataset_name
     load_base_model_if_exist = True
     save_pixel_list = True
 
-    use_deletion_game = True
+    use_deletion_game = False
     deterioration_rate = 0.05
     num_deterioration_steps = 20
 
@@ -367,7 +367,7 @@ if __name__ == "__main__":
     #FOR EACH EXPLANATION
     for explanation_name in explanation_names:
     
-        model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = {"learning_rate":model_train_params["learning_rate"]})
+        model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = model_train_params)
         
         #TRAIN OR LOAD MODEL
         model_load_path = model_instance.model_dir
@@ -393,7 +393,8 @@ if __name__ == "__main__":
             generate_random_pixel_list = True
         
         #INSTANTIATE EXPLANTION
-        explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
+        if(explanation_name != "random"):
+            explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
 
 
         #INITAL TEST of MODEL
