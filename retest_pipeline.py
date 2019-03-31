@@ -185,6 +185,7 @@ if __name__ == "__main__":
         
         test_results.append((0,baseline_accuracy))
         
+        #TODO: record image wise predictions for baseline
         
         ## INITALISE DETERIORATION IMAGES
         x_deteriated = np.copy(test_x)

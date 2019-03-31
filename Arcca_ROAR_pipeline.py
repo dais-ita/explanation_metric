@@ -409,6 +409,9 @@ if __name__ == "__main__":
 
         test_results.append((0,baseline_accuracy))
 
+        #TODO: record image wise predictions for baseline
+       
+        
         #CREATE WORKING COPY OF TRAIN SET
         x_deteriated = np.copy(train_x)
 

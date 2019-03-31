@@ -254,7 +254,7 @@ def AggregatePredictionStrengths(explanation_names, image_results_dict):
 
 if __name__ == "__main__":
     experiment_id = "testROAR_PRESERVATION"
-    experiment_id = "testROAR"
+    # experiment_id = "testROAR"
     dataset_name = "CIFAR-10"
 
     explanation_names = [

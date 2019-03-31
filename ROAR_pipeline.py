@@ -279,8 +279,8 @@ if __name__ == "__main__":
     explanation_names = ["random","Shap"] #"LIME","Shap"
     load_from_pixel_list_path_dict={
         "LIME": os.path.join("pixel_lists","TRAIN_testROAR_CIFAR-10_LIME_1553461654.pkl")
-        ,"Shap": "TRAIN_testROAR_CIFAR-10_Shap_1553686507.pkl"
-        ,"random": "TRAIN_testROAR_CIFAR-10_random_1553734921.pkl"
+        ,"Shap": os.path.join("pixel_lists","TRAIN_testROAR_CIFAR-10_Shap_1553686507.pkl")
+        ,"random": os.path.join("pixel_lists","TRAIN_testROAR_CIFAR-10_random_1553734921.pkl")
     }
 
     experiment_id="testROAR_PRESERVATION_"+dataset_name
@@ -409,7 +409,9 @@ if __name__ == "__main__":
         print("baseline_accuracy",baseline_accuracy)
 
         test_results.append((0,baseline_accuracy))
-
+        
+        #TODO: record image wise predictions for baseline
+       
         #CREATE WORKING COPY OF TRAIN SET
         x_deteriated = np.copy(train_x)
 
