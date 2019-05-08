@@ -121,3 +121,6 @@ results
 #ignore lock files
 .~lock*
 
+#monte carlo
+monte_carlo_results/
+sample_deteriorated_images/

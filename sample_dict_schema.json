@@ -1,0 +1,55 @@
+
+{
+    FIRST_CLASS_NAME:[
+        {"img_i":FIRST_IMG_INDEX
+            ,"results":[
+                {"proportion": FIRST_DETERIORATION_PROPORTION
+                    ,"results":[
+                        FIRST_SAMPLE_RESULT,SECOND_SAMPLE_RESULT, ... NTH_SAMPLE_RESULT
+                        ]
+                }
+                ...
+                ,{"proportion": NTH_DETERIORATION_PROPORTION
+                    ,"results":[
+                        FIRST_SAMPLE_RESULT,SECOND_SAMPLE_RESULT, ... NTH_SAMPLE_RESULT
+                        ]
+                }
+                
+            ]
+        }
+        ...
+        ,{"img_i":NTH_IMG_INDEX
+            ...
+        }
+    ]
+    
+    ...
+
+    ,NTH_CLASS_NAME:[
+        ...
+    ]
+}
+
+
+{
+    "horse":[
+        {"img_i":0,"results":[
+            {"proportion": 0.05,"results":[0.8,0.8,0.7]}
+            ,{"proportion": 0.1,"results":[0.8,0.8,0.7]}
+        ]}
+        ,{"img_i":1,"results":[
+            {"proportion": 0.05,"results":[0.8,0.8,0.7]}
+            ,{"proportion": 0.1,"results":[0.8,0.8,0.7]}
+        ]}
+    ],
+    "automobile":[
+        {"img_i":0,"results":[
+            {"proportion": 0.05,"results":[0.8,0.8,0.7]}
+            ,{"proportion": 0.1,"results":[0.8,0.8,0.7]}
+        ]}
+        ,{"img_i":1,"results":[
+            {"proportion": 0.05,"results":[0.8,0.8,0.7]}
+            ,{"proportion": 0.1,"results":[0.8,0.8,0.7]}
+        ]}
+    ]
+}

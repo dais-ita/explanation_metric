@@ -41,6 +41,8 @@ def SaveImage(image, output_path, flip_channels = False):
     im = Image.fromarray(output_image.astype(np.uint8))
     im.save(output_path)
 
+
+
 if __name__ == "__main__":
     #INITIALISE EXPERIMENT PARAMETERS    
     dataset_name = "Traffic Congestion Image Classification (Resized)"
