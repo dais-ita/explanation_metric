@@ -78,8 +78,8 @@ def NormalisePixelList(image_pixel_list):
     
     total = 0
     for p in image_pixel_list:
-        positive_list.append([p[0],p[1],p[2]+p_min])
-        total += (p[2]+p_min)
+        positive_list.append([p[0],p[1],p[2]+abs(p_min)])
+        total += (p[2]+abs(p_min))
 
     distribution_list = []
     for p in positive_list:
@@ -137,10 +137,10 @@ def weighted_sample(population, weights, k):
     return list(sample), population, weights
 
 
-def SampleFromPixelList(normalised_pixel_list,num_pixels_to_select,weights=None):
+def SampleFromPixelList(normalised_pixel_list,num_pixels_to_select,weights=None,importance_power=1):
     if weights is None:
-        weights = [p[2] for p in normalised_pixel_list]
-    
+        weights = [p[2]**importance_power for p in normalised_pixel_list]
+        
     sample, new_population, new_weights = weighted_sample(normalised_pixel_list, weights, num_pixels_to_select)
 
     return sample, new_population, new_weights
@@ -165,10 +165,12 @@ if __name__ == "__main__":
     num_deterioration_steps = 20
 
     num_trials = 100
+
+    exponent = 3
     
     correct_predictions_only = True
 
-    experiment_id = "100_monte_carlo_metric_"+dataset_name+"_"+model_name+"_"+test_or_train_data
+    experiment_id = "expo_"+str(exponent)+"_100_monte_carlo_metric_"+dataset_name+"_"+model_name+"_"+test_or_train_data
     if(correct_predictions_only):
         experiment_id += "_correct_only"
 
@@ -233,7 +235,7 @@ if __name__ == "__main__":
     working_x = model_instance.CheckInputArrayAndResize(working_x,model_instance.min_height,model_instance.min_width)
 
     heading_output_string = ",".join(["explanation_name","class_name","img_i","trial_i","original_prediction_strength"]+["{:.2f}".format(i) for i in list(np.arange(0,deterioration_rate*(num_deterioration_steps+1),deterioration_rate))])+"\n"
-    for explanation_name in explanation_names[:1]:
+    for explanation_name in explanation_names[:]:
         print("Starting Explanation: "+explanation_name)
         #Load Importance Pickle
         print("Loading Pixel List")
@@ -290,7 +292,7 @@ if __name__ == "__main__":
                     for current_deterioration_step_i in range(num_deterioration_steps):
                         current_deterioration_proportion = (current_deterioration_step_i+1)*deterioration_rate
                         # print("Beginning Deterioration Proportion: "+str(current_deterioration_proportion))
-                        sampled_pixels, remaining_pixels, remaining_weights = SampleFromPixelList(remaining_pixels,num_pixels_per_step,weights=remaining_weights)
+                        sampled_pixels, remaining_pixels, remaining_weights = SampleFromPixelList(remaining_pixels,num_pixels_per_step,weights=remaining_weights,importance_power=exponent)
 
                         # print("Detiorating Image")
                         working_image = DeteriorateImage(working_image,sampled_pixels,dataset_mean)
