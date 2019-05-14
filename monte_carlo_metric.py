@@ -140,9 +140,34 @@ def weighted_sample(population, weights, k):
 def SampleFromPixelList(normalised_pixel_list,num_pixels_to_select,weights=None,importance_power=1):
     if weights is None:
         weights = [p[2]**importance_power for p in normalised_pixel_list]
-        
-    sample, new_population, new_weights = weighted_sample(normalised_pixel_list, weights, num_pixels_to_select)
 
+    weights_total = sum([p for p in weights]) 
+
+    weights = [p/weights_total for p in weights]    
+
+    # sample, new_population, new_weights = weighted_sample(normalised_pixel_list, weights, num_pixels_to_select)
+    
+    pixel_list_indexs = list(range(len(weights)))
+
+    if(len(pixel_list_indexs) != len(weights)):
+        print("size missmatch")
+
+    sample_indexs = np.random.choice(pixel_list_indexs,size=min(len(weights,num_pixels_to_select)),replace=False, p=weights)
+
+    sample = []
+    new_population = []
+    new_weights = []
+
+    sample_indexs_set = set(sample_indexs)
+
+    for i in range(len(weights)):
+        if(i in sample_indexs_set):
+            sample.append(normalised_pixel_list[i])
+        else:
+          if(weights[i] > 0):
+            new_population.append(normalised_pixel_list[i])
+            new_weights.append(weights[i])
+        
     return sample, new_population, new_weights
 
 
@@ -170,7 +195,7 @@ if __name__ == "__main__":
     
     correct_predictions_only = True
 
-    experiment_id = "expo_"+str(exponent)+"_100_monte_carlo_metric_"+dataset_name+"_"+model_name+"_"+test_or_train_data
+    experiment_id = "updated_expo_"+str(exponent)+"_100_monte_carlo_metric_"+dataset_name+"_"+model_name+"_"+test_or_train_data
     if(correct_predictions_only):
         experiment_id += "_correct_only"
 
