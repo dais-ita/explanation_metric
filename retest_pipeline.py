@@ -46,25 +46,26 @@ def SaveImage(image, output_path, flip_channels = False):
 if __name__ == "__main__":
     #INITIALISE EXPERIMENT PARAMETERS    
     dataset_name = "Traffic Congestion Image Classification (Resized)"
+    dataset_name = "MNIST"
     dataset_name = "CIFAR-10"
     
     # model_name = "inception_v3_imagenet"
     model_name = "vgg16"
     normalise_data = True
 
-    explanation_names = ["LIME","Shap","random"]
+    explanation_names = ["Shap","LIME","random"]
     load_from_pixel_list_path_dict={
-        "LIME": os.path.join("pixel_lists","TEST_CIFAR-10_LIME_1553397515.pkl")
-        ,"Shap": os.path.join("pixel_lists","TEST_CIFAR-10_Shap_1553406978.pkl")
-        ,"random": os.path.join("pixel_lists","TEST_CIFAR-10_random_1553390622.pkl")
+        # "LIME": os.path.join("pixel_lists","TEST_CIFAR-10_LIME_1553397515.pkl")
+        # ,"Shap": os.path.join("pixel_lists","TEST_CIFAR-10_Shap_1553406978.pkl")
+        # ,"random": os.path.join("pixel_lists","TEST_CIFAR-10_random_1553390622.pkl")
     }
     explanation_name = "LIME"
-    experiment_id="testPRESERVATION_"+dataset_name
+    experiment_id="trainable_deletion_"+dataset_name
     output_path=os.path.join("results",str(experiment_id)+"_"+explanation_name+"_results.csv")
     load_base_model_if_exist = True
     save_pixel_list = True
 
-    use_deletion_game = False
+    use_deletion_game = True
     deterioration_rate = 0.05
     num_deterioration_steps = 20
 
@@ -85,14 +86,6 @@ if __name__ == "__main__":
     }
 
     
-    
-
-    
-    
-    
-
-
-    
 # INITIALISE DATASET, MODEL and EXPLANATION
     framework_tool = DaisFrameworkTool(explicit_framework_base_path=framework_path)
 
@@ -109,7 +102,7 @@ if __name__ == "__main__":
     print("load training data")
     print("")
     source = "train"
-    #TODO change batch sizes to -1 , 256 , 256
+    #TODO change batch sizes to -1 , 256 , -1
     train_x, train_y = dataset_tool.GetBatch(batch_size = -1,even_examples=True, y_labels_to_use=label_names, split_batch = True, split_one_hot = True, batch_source = source, shuffle=False)
     print("num train examples: "+str(len(train_x)))
 
@@ -149,7 +142,7 @@ if __name__ == "__main__":
     if(os.path.exists(model_load_path) == True and load_base_model_if_exist == True):
         model_instance.LoadModel(model_load_path)
     else:
-        if(normalise_data):
+        if( ):
             training_stats = framework_tool.TrainModel(model_instance,dataset_tool.StandardizeImages(train_x), train_y, model_train_params["batch_size"], model_train_params["num_train_steps"], val_x= dataset_tool.StandardizeImages(val_x), val_y=val_y)
 
         else:
