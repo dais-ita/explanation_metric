@@ -53,15 +53,13 @@ if __name__ == "__main__":
     model_name = "vgg16"
     normalise_data = True
 
-    explanation_names = ["Shap","LIME","random"]
+    explanation_names = ["Shap","LIME","random"] # list os explanations to generate results for
     load_from_pixel_list_path_dict={
         # "LIME": os.path.join("pixel_lists","TEST_CIFAR-10_LIME_1553397515.pkl")
         # ,"Shap": os.path.join("pixel_lists","TEST_CIFAR-10_Shap_1553406978.pkl")
         # ,"random": os.path.join("pixel_lists","TEST_CIFAR-10_random_1553390622.pkl")
     }
-    explanation_name = "LIME"
     experiment_id="trainable_deletion_"+dataset_name
-    output_path=os.path.join("results",str(experiment_id)+"_"+explanation_name+"_results.csv")
     load_base_model_if_exist = True
     save_pixel_list = True
 
