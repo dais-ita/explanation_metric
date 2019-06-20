@@ -17,7 +17,7 @@ import numpy as np
 #"testRETEST_CIFAR-10_LIME_00000_deteriation_results.csv"
 
 
-def DisplayPredictionStrengthsAcrossAllClassesForOneExplanationOneImage(explanation_name, image_i, image_results_dict):
+def DisplayPredictionStrengthsAcrossAllClassesForOneExplanationOneImage(explanation_name, image_i, image_results_dict,num_steps=20):
     image_results = image_results_dict[explanation_name][image_i]["results"]
     predicted_class = image_results_dict[explanation_name][image_i]["original_prediction"]
     ground_truth_class = image_results_dict[explanation_name][image_i]["ground_truth"]
@@ -26,7 +26,7 @@ def DisplayPredictionStrengthsAcrossAllClassesForOneExplanationOneImage(explanat
 
     class_results = [ [] for i in range(num_classes) ]
 
-    detrioration_steps = list(range(0,20))
+    detrioration_steps = list(range(0,num_steps))
 
     for detrioration_step in detrioration_steps:
         for class_i in range(num_classes):
@@ -49,7 +49,7 @@ def DisplayPredictionStrengthsAcrossAllClassesForOneExplanationOneImage(explanat
     plt.show()
 
 
-def DisplayPredictionStrengthOfPredicitedClassForAllExplanationOneImage(explanation_names, image_i, image_results_dict):
+def DisplayPredictionStrengthOfPredicitedClassForAllExplanationOneImage(explanation_names, image_i, image_results_dict,num_steps=20):
     explanation_results = {}
 
     for explanation_name in explanation_names:
@@ -62,7 +62,7 @@ def DisplayPredictionStrengthOfPredicitedClassForAllExplanationOneImage(explanat
         num_classes = len(image_results[0])
 
         
-        detrioration_steps = list(range(0,20))
+        detrioration_steps = list(range(0,num_steps))
 
         for detrioration_step in detrioration_steps:
             explanation_results[explanation_name].append(image_results[detrioration_step][predicted_class])
@@ -84,8 +84,8 @@ def DisplayPredictionStrengthOfPredicitedClassForAllExplanationOneImage(explanat
     plt.show()
 
 
-def DisplayTestAccuraciesForAllClassesForAllExplanationsAcrossAllImages(explanation_names,accuracies_dict):
-    detrioration_steps = list(range(0,21))
+def DisplayTestAccuraciesForAllClassesForAllExplanationsAcrossAllImages(explanation_names,accuracies_dict,num_steps=20):
+    detrioration_steps = list(range(0,num_steps+1))
 
     fig = plt.figure()
 
@@ -104,8 +104,8 @@ def DisplayTestAccuraciesForAllClassesForAllExplanationsAcrossAllImages(explanat
 
 
 
-def DisplayOriginalPredictionDegradationForAllExplanationsAcrossAllImages(explanation_names, image_results_dict):
-    detrioration_steps = list(range(0,20))
+def DisplayOriginalPredictionDegradationForAllExplanationsAcrossAllImages(explanation_names, image_results_dict,num_steps=20):
+    detrioration_steps = list(range(0,num_steps))
 
     # predicted_class = image_results_dict[explanation_names[0]][image_i]["original_prediction"]
     # original_strength = image_results_dict[explanation_names[0]][image_i]["original_prediction_score"]
@@ -144,8 +144,8 @@ def DisplayOriginalPredictionDegradationForAllExplanationsAcrossAllImages(explan
     plt.show()
 
 
-def DisplayOriginalPredictionDegradationForAllExplanationsForOneImage(explanation_names, image_i, image_results_dict):
-    detrioration_steps = list(range(0,20))
+def DisplayOriginalPredictionDegradationForAllExplanationsForOneImage(explanation_names, image_i, image_results_dict,num_steps=20):
+    detrioration_steps = list(range(0,num_steps))
 
     predicted_class = image_results_dict[explanation_names[0]][image_i]["original_prediction"]
     original_strength = image_results_dict[explanation_names[0]][image_i]["original_prediction_score"]
@@ -174,12 +174,12 @@ def DisplayOriginalPredictionDegradationForAllExplanationsForOneImage(explanatio
     plt.show()
 
 
-def GetAccuraciesDict(experiment_id, dataset_name, explanation_names,results_dir="results"):
+def GetAccuraciesDict(experiment_id, dataset_name, explanation_names,perturbation_type,results_dir="results"):
     accuracies_dict = {}
     for explanation_name in explanation_names:
         accuracies_dict[explanation_name] = []
 
-        accuracies_csv_name = experiment_id+"_"+dataset_name+"_"+explanation_name+"_results.csv"
+        accuracies_csv_name = experiment_id+"_"+dataset_name+ "_" + perturbation_type + "_" +explanation_name+"_results.csv"
         accuracies_csv_path = os.path.join(results_dir,accuracies_csv_name)
 
         accuracies_string = ""
@@ -196,8 +196,8 @@ def GetAccuraciesDict(experiment_id, dataset_name, explanation_names,results_dir
     return accuracies_dict
 
 
-def GetResultsDict(experiment_id, dataset_name, explanation_names,results_dir="results"):
-    results_pickle_name = "results_"+experiment_id+"_"+dataset_name+".pkl"
+def GetResultsDict(experiment_id, dataset_name, explanation_names,perturbation_type,results_dir="results",num_steps =20):
+    results_pickle_name = "results_"+experiment_id+"_"+dataset_name+"_"+perturbation_type+".pkl"
     results_pickle_path = os.path.join(results_dir,results_pickle_name)
 
     image_results_dicts = {}
@@ -212,10 +212,10 @@ def GetResultsDict(experiment_id, dataset_name, explanation_names,results_dir="r
         for explanation_name in explanation_names[:]:
             image_results_dicts[explanation_name] = []
 
-            for deterioration_step in range(20)[:]: 
+            for deterioration_step in range(num_steps)[:]: 
                 deterioration_step_string = format(deterioration_step, '05d')
 
-                file_name = experiment_id + "_" + dataset_name + "_" + explanation_name + "_" + deterioration_step_string +"_deterioration_results.csv"
+                file_name = experiment_id + "_" + dataset_name + "_" +  perturbation_type + "_" + explanation_name + "_" + deterioration_step_string +"_deterioration_results.csv"
                 file_path = os.path.join(results_dir,"image_results",file_name)
 
                 results_string = ""
@@ -253,7 +253,7 @@ def AggregatePredictionStrengths(explanation_names, image_results_dict):
 
 
 if __name__ == "__main__":
-    experiment_id = "testROAR_PRESERVATION"
+    experiment_id = "deletion_game"
     # experiment_id = "testROAR"
     dataset_name = "CIFAR-10"
 
@@ -262,20 +262,24 @@ if __name__ == "__main__":
         ,"Shap"
         ,"random"
         ]
+    
+    perturbation_type = "mean"
 
-    image_results_dict = GetResultsDict(experiment_id,dataset_name,explanation_names)
+    num_steps = 20
 
-    accuracies_dict = GetAccuraciesDict(experiment_id,dataset_name,explanation_names)
+    image_results_dict = GetResultsDict(experiment_id,dataset_name,explanation_names,perturbation_type)
+
+    accuracies_dict = GetAccuraciesDict(experiment_id,dataset_name,explanation_names,perturbation_type)
 
     explanation_name = explanation_names[0]
     image_i = 0
 
-    DisplayPredictionStrengthsAcrossAllClassesForOneExplanationOneImage(explanation_name, image_i, image_results_dict)
+    # DisplayPredictionStrengthsAcrossAllClassesForOneExplanationOneImage(explanation_name, image_i, image_results_dict)
 
-    DisplayPredictionStrengthOfPredicitedClassForAllExplanationOneImage(explanation_names, image_i, image_results_dict)
+    # DisplayPredictionStrengthOfPredicitedClassForAllExplanationOneImage(explanation_names, image_i, image_results_dict)
     
-    DisplayTestAccuraciesForAllClassesForAllExplanationsAcrossAllImages(explanation_names,accuracies_dict)
+    # DisplayTestAccuraciesForAllClassesForAllExplanationsAcrossAllImages(explanation_names,accuracies_dict)
 
-    DisplayOriginalPredictionDegradationForAllExplanationsForOneImage(explanation_names, image_i, image_results_dict)
+    # DisplayOriginalPredictionDegradationForAllExplanationsForOneImage(explanation_names, image_i, image_results_dict)
 
-    DisplayOriginalPredictionDegradationForAllExplanationsAcrossAllImages(explanation_names, image_results_dict)
+    DisplayOriginalPredictionDegradationForAllExplanationsAcrossAllImages(explanation_names, image_results_dict,num_steps=num_steps)

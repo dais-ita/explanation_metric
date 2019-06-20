@@ -83,7 +83,7 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
         "num_samples":100,
         "num_features":300,
         "min_weight":0.01, 
-        "num_background_samples":50,
+        "num_background_samples":512,
         "train_x":train_x,
         "train_y":train_y,
         "max_n_influence_images":9,
@@ -236,13 +236,33 @@ def PerturbData(Xs,deterioration_proportion,dataset_pixel_lists,deterioration_st
 
 #Perturbation Type Functions
 def CreateConstantPeturbFunction(pixel_constant_values):
-    def constant_perturbation(image, x, y):
-        image[x][y] = [pixel_constant_values[0],pixel_constant_values[1],pixel_constant_values[2]]
+    def constant_perturbation(img, x, y):
+        img[x][y] = [pixel_constant_values[0],pixel_constant_values[1],pixel_constant_values[2]]
 
-        return image
+        return img
     
     return constant_perturbation
 
+def DeteriorateImageWithRandomColour(img,x,y):
+    img[x][y] = [random.random(),random.random(),random.random()]
+    
+    return img
+
+
+def CreateGridPerturbationFunction(grid_width=3,grid_height=3, pixel_operation_function=DeteriorateImageWithRandomColour):
+    grid_width_distance = int((grid_width-1) / 2)
+    grid_height_distance = int((grid_height-1) / 2)
+    print(grid_height_distance)
+    def DeteriorateGridOfImageWithRandomColour(img,x,y):
+        for width_modifier in range(-grid_width_distance,(grid_width_distance+1),1):
+            for height_modifier in range(-grid_height_distance,(grid_height_distance+1),1):
+                img[x+width_modifier][y+height_modifier] = [random.random(),random.random(),random.random()]
+                # img = pixel_operation_function(img, x+width_modifier,y+height_modifier)
+                
+        return img
+    
+
+    return DeteriorateImageWithRandomColour
 
 
 

@@ -32,8 +32,8 @@ explanation_pixel_lists_dict = {
         "pixel_lists":{
             "LIME":{
                 "test":{
-                    # "CIFAR-10":"TEST_CIFAR-10_LIME_1553397515.pkl"
-                    "CIFAR-10":"TEST_CIFAR-10_LIME_1553397515_SMALL_200.pkl"
+                    "CIFAR-10":"trainable_deletion_CIFAR-10_LIME_1557966687.pkl"
+                    # "CIFAR-10":"TEST_CIFAR-10_LIME_1553397515_SMALL_200.pkl"
                 },
                 "train":{
                     "CIFAR-10":"TRAIN_testROAR_CIFAR-10_LIME_1553461654.pkl"
@@ -41,7 +41,7 @@ explanation_pixel_lists_dict = {
             },
             "Shap":{
                 "test":{
-                    "CIFAR-10":"TEST_CIFAR-10_Shap_1553406978.pkl"
+                    "CIFAR-10":"trainable_deletion_CIFAR-10_Shap_1557965400.pkl"
                 },
                 "train":{
                     "CIFAR-10":"TRAIN_testROAR_CIFAR-10_Shap_1553686507.pkl"
@@ -49,7 +49,7 @@ explanation_pixel_lists_dict = {
             },
             "random":{
                 "test":{
-                    "CIFAR-10":"TEST_CIFAR-10_random_1553390622.pkl"
+                    "CIFAR-10":"trainable_deletion_CIFAR-10_random_1557967006.pkl"
                 },
                 "train":{
                     "CIFAR-10":"TRAIN_testROAR_CIFAR-10_random_1553734921.pkl"
@@ -152,8 +152,11 @@ def SampleFromPixelList(normalised_pixel_list,num_pixels_to_select,weights=None,
     if(len(pixel_list_indexs) != len(weights)):
         print("size missmatch")
 
-    sample_indexs = np.random.choice(pixel_list_indexs,size=min(len(weights,num_pixels_to_select)),replace=False, p=weights)
-
+    if(len(pixel_list_indexs) != 0):
+        sample_indexs = np.random.choice(pixel_list_indexs,size=min(len(weights),num_pixels_to_select),replace=False, p=weights)
+    else:
+        sample_indexs = []
+    
     sample = []
     new_population = []
     new_weights = []
@@ -178,6 +181,13 @@ def DeteriorateImage(working_image,sampled_pixels,dataset_mean):
     return working_image
 
 
+def DeteriorateImageWithRandomColour(working_image,sampled_pixels,dataset_mean):
+    for px in sampled_pixels:
+        working_image[px[0]][px[1]] = [random.random(),random.random(),random.random()]
+    
+    return working_image
+
+
 if __name__ == "__main__":
     dataset_name = "CIFAR-10"
     model_name = "vgg16" #M
@@ -195,7 +205,7 @@ if __name__ == "__main__":
     
     correct_predictions_only = True
 
-    experiment_id = "updated_expo_"+str(exponent)+"_100_monte_carlo_metric_"+dataset_name+"_"+model_name+"_"+test_or_train_data
+    experiment_id = "random_colour_expo_"+str(exponent)+"_100_monte_carlo_metric_"+dataset_name+"_"+model_name+"_"+test_or_train_data
     if(correct_predictions_only):
         experiment_id += "_correct_only"
 
@@ -212,6 +222,9 @@ if __name__ == "__main__":
     ,"experiment_id":experiment_id
     ,"dropout":0.5
     }
+
+    # deteriorate_function = DeteriorateImage
+    deteriorate_function = DeteriorateImageWithRandomColour
 
     save_deteriorated_images_below_image_index = 3
     save_deteriorated_images_below_trial_index = 2
@@ -320,7 +333,7 @@ if __name__ == "__main__":
                         sampled_pixels, remaining_pixels, remaining_weights = SampleFromPixelList(remaining_pixels,num_pixels_per_step,weights=remaining_weights,importance_power=exponent)
 
                         # print("Detiorating Image")
-                        working_image = DeteriorateImage(working_image,sampled_pixels,dataset_mean)
+                        working_image = deteriorate_function(working_image,sampled_pixels,dataset_mean)
                         
                         if(img_i < save_deteriorated_images_below_image_index and trial_i < save_deteriorated_images_below_trial_index):
                             save_output_path = os.path.join("sample_deteriorated_images", experiment_id + "_" +explanation_name+"_"+ str(img_i) + "_" + str(current_deterioration_proportion) + "_" + str(trial_i) +".jpg")

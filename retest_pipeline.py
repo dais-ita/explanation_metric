@@ -15,7 +15,7 @@ import cv2
 import tensorflow as tf
 import random
 
-from ROAR_pipeline import CreatePixelListForAllData, LoadPixelListFromPath, SavePixelList, PerturbData, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList, GenerateRandomPixelWeights
+from ROAR_pipeline import CreatePixelListForAllData, LoadPixelListFromPath, SavePixelList, PerturbData, CreateGridPerturbationFunction, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList, GenerateRandomPixelWeights,DeteriorateImageWithRandomColour
 
 # INITIALISE FRAMEWORK
 ###UPDATE FRAMEWORK PATH
@@ -48,6 +48,7 @@ if __name__ == "__main__":
     dataset_name = "Traffic Congestion Image Classification (Resized)"
     dataset_name = "MNIST"
     dataset_name = "CIFAR-10"
+    # dataset_name = "ImageNet"
     
     # model_name = "inception_v3_imagenet"
     model_name = "vgg16"
@@ -55,26 +56,37 @@ if __name__ == "__main__":
 
     explanation_names = ["Shap","LIME","random"] # list os explanations to generate results for
     load_from_pixel_list_path_dict={
-        # "LIME": os.path.join("pixel_lists","TEST_CIFAR-10_LIME_1553397515.pkl")
-        # ,"Shap": os.path.join("pixel_lists","TEST_CIFAR-10_Shap_1553406978.pkl")
-        # ,"random": os.path.join("pixel_lists","TEST_CIFAR-10_random_1553390622.pkl")
+        "LIME": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_LIME_1559235451.pkl")
+        ,"Shap": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_Shap_1559300187.pkl")
+        ,"random": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_random_1559235793.pkl")
     }
-    experiment_id="trainable_deletion_"+dataset_name
+
+    perturb_method = "grid"
+    perturb_method = "random"
+    perturb_method = "mean"
+
+    experiment_id=""
+
+    use_deletion_game = False
+    if(use_deletion_game):
+        experiment_id += "deletion_game"
+    else:
+        experiment_id += "preservation_game"
+    
+    experiment_id+="_"+dataset_name+"_"+perturb_method
     load_base_model_if_exist = True
     save_pixel_list = True
 
-    use_deletion_game = True
+    
+    explicit_pixels_per_step = None #setting to None, causes a calculation of the number of pixels per step to be made based on deterioration_rate 
+    #explicit_pixels_per_step = 1
+
     deterioration_rate = 0.05
+
     num_deterioration_steps = 20
 
     save_deteriorated_images_below_index = 5
     
-    generate_random_pixel_list = False
-    if(explanation_name == "random"):
-        generate_random_pixel_list = True
-    
-    load_from_pixel_list_path = "" #os.path.join("pixel_lists",pixel_list_name) "TEST_CIFAR-10_random_1553144498.pkl" #"TEST_CIFAR-10_LIME_1552602173.pkl" #make sure to load test set
-
     model_train_params ={
     "learning_rate": 0.001
     ,"batch_size":128
@@ -191,7 +203,11 @@ if __name__ == "__main__":
         num_pixels = dataset_json["image_y"] * dataset_json["image_x"]
         
         num_pixels_in_padded = x_deteriated[0].shape[:-1][0] * x_deteriated[0].shape[:-1][1]
-        deterioration_index_step = int(math.ceil(num_pixels_in_padded * deterioration_rate))
+        if(explicit_pixels_per_step is None):
+            deterioration_index_step = int(math.ceil(num_pixels_in_padded * deterioration_rate))
+        else:
+            deterioration_index_step = explicit_pixels_per_step
+
     #EXPLAIN and PRODUCE ORDERED PIXEL LISTS
         pixel_lists = []
         
@@ -221,14 +237,34 @@ if __name__ == "__main__":
 
     # EVALUATION
         
-        perturbation_function = CreateConstantPeturbFunction(dataset_mean)
+        ### SELECT PERTURBATION FUNCTION ####
+        if(perturb_method == "grid"):
+            perturbation_function = CreateGridPerturbationFunction()
+        elif(perturb_method == "mean"):
+            perturbation_function = CreateConstantPeturbFunction(dataset_mean)
+        elif(perturb_method == "random"):
+            perturbation_function = DeteriorateImageWithRandomColour
+        else:
+            print("Perturb method not recognised")
+            assert False
+        paper_results_dict = {}
 
-        
+        ###original prediction strengths
+
+        x_prediction_probs, x_predictions = model_instance.Predict(dataset_tool.StandardizeImages(x_deteriated), return_prediction_scores = True)
+            
+        for img_i in range(len(x_prediction_probs)):
+            paper_results_dict[img_i] = {"results":[],"ground_truth":np.argmax(test_y[img_i]),"original_prediction":x_predictions[img_i]}
+            original_prediction_i = paper_results_dict[img_i]["original_prediction"]
+            paper_results_dict[img_i]["results"].append(x_prediction_probs[img_i][original_prediction_i])
+
         #For each level of deterioration:
         for deterioration_step in range(num_deterioration_steps):
             deterioration_output_path = str(experiment_id)+"_"+explanation_name+"_"+format(deterioration_step, '05d')+"_deterioration_results.csv"
             deterioration_output_path = os.path.join("results","image_results",deterioration_output_path)
             
+
+
             deterioration_output_string = ""
             print("")
             print("______")
@@ -248,8 +284,14 @@ if __name__ == "__main__":
                 deterioration_output_string += ",".join(prediction_probs) +","+str(prediction) +","+str(np.argmax(test_y[img_i])) +"\n"
                 
                 if(img_i < save_deteriorated_images_below_index):
-                    save_output_path = os.path.join("deteriorated_images", experiment_id + "_" +explanation_name+"_"+ str(deterioration_step) + "_" + str(img_i) +".jpg")
+                    save_output_path = os.path.join("deteriorated_images", experiment_id + "_" +explanation_name+"_"+ str(img_i) + "_" + str(deterioration_step) +".jpg")
                     SaveImage(x_deteriated[img_i],save_output_path)
+                
+                ###paper results
+                original_prediction_i = paper_results_dict[img_i]["original_prediction"]
+                paper_results_dict[img_i]["results"].append(x_prediction_probs[img_i][original_prediction_i])
+                    
+
             with open(deterioration_output_path, "w") as f:
                 f.write(deterioration_output_string[:-1])
 
@@ -262,6 +304,36 @@ if __name__ == "__main__":
             print("new accuracy",new_accuracy)
 
             test_results.append( (deterioration_rate*(deterioration_step+1),new_accuracy) )
-            
+        
         SaveExperimentResults(output_path,test_results)
 
+        paper_results_output_path = str(experiment_id)+"_"+explanation_name+"_results.csv"
+        paper_results_output_path = os.path.join("paper_results",paper_results_output_path)
+        paper_results_string = ",".join(["explantion_name"
+        ,"ground_truth"
+        ,"original_prediction_i"
+        ,"img_i"
+        ,"trial_i"])
+
+        if(explicit_pixels_per_step is None):
+            for deterioration_step_track in range(num_deterioration_steps+1): 
+                paper_results_string += "," + str(deterioration_rate*deterioration_step_track)
+        else:
+            for deterioration_step_track in range(num_deterioration_steps+1): 
+                paper_results_string += "," + str(explicit_pixels_per_step*deterioration_step_track)
+                
+        
+        for img_i in range(len(x_prediction_probs)):
+            res_string = ",".join( [str(v) for v in paper_results_dict[img_i]["results"] ] )
+            paper_results_string += "\n"
+            paper_results_string += ",".join(str(v) for v in [
+                explanation_name
+                ,paper_results_dict[img_i]["ground_truth"]
+                ,paper_results_dict[img_i]["original_prediction"]
+                ,img_i
+                ,0
+                ,res_string
+            ])
+        
+        with open(paper_results_output_path, "w") as f:
+                f.write(paper_results_string)
