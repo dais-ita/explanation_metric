@@ -16,6 +16,7 @@ framework_path = "/home/richard/git/interpretability_framework"
 sys.path.append(framework_path)
 from DaisFrameworkTool import DaisFrameworkTool
 
+dft = DaisFrameworkTool(explicit_framework_base_path=framework_path)
 dataset_json, dataset_tool = dft.LoadFrameworkDataset("CIFAR-10-original")
 label_names = [label["label"] for label in dataset_json["labels"]]
 
