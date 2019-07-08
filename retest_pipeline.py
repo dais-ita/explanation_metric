@@ -309,7 +309,7 @@ if __name__ == "__main__":
 
         paper_results_output_path = str(experiment_id)+"_"+explanation_name+"_results.csv"
         paper_results_output_path = os.path.join("paper_results",paper_results_output_path)
-        paper_results_string = ",".join(["explantion_name"
+        paper_results_string = ",".join(["explanation_name"
         ,"ground_truth"
         ,"original_prediction_i"
         ,"img_i"
