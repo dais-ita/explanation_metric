@@ -141,7 +141,7 @@ if __name__ == "__main__":
 
 
     #INSTANTIATE MODEL
-    model_save_path_suffix = ".h5"
+    model_save_path_suffix = ""
     model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args =model_train_params)
     
 
