@@ -47,11 +47,11 @@ if __name__ == "__main__":
     #INITIALISE EXPERIMENT PARAMETERS    
     dataset_name = "Traffic Congestion Image Classification (Resized)"
     dataset_name = "MNIST"
-    dataset_name = "CIFAR-10"
+    dataset_name = "CIFAR-10-original"
     # dataset_name = "ImageNet"
     
     # model_name = "inception_v3_imagenet"
-    model_name = "vgg16"
+    model_name = "vgg16_richard"
     normalise_data = True
 
     explanation_names = ["Shap","LIME","random"] # list os explanations to generate results for
