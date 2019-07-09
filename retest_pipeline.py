@@ -55,11 +55,12 @@ if __name__ == "__main__":
     normalise_data = True
 
     explanation_names = ["Shap","LIME","random"] # list os explanations to generate results for
-    load_from_pixel_list_path_dict={
-        "LIME": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_LIME_1559235451.pkl")
-        ,"Shap": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_Shap_1559300187.pkl")
-        ,"random": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_random_1559235793.pkl")
-    }
+    load_from_pixel_list_path_dict = {}
+    #{
+    #    "LIME": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_LIME_1559235451.pkl")
+    #    ,"Shap": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_Shap_1559300187.pkl")
+    #    ,"random": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_random_1559235793.pkl")
+    #}
 
     perturb_method = "grid"
     perturb_method = "random"
@@ -85,12 +86,12 @@ if __name__ == "__main__":
 
     num_deterioration_steps = 20
 
-    save_deteriorated_images_below_index = 5
+    save_deteriorated_images_below_index = 10
     
     model_train_params ={
     "learning_rate": 0.001
-    ,"batch_size":128
-    ,"num_train_steps":150
+    ,"batch_size":64
+    ,"num_train_steps":250
     ,"experiment_id":experiment_id
     ,"dropout":0.5
     }
@@ -113,25 +114,25 @@ if __name__ == "__main__":
     print("")
     source = "train"
     #TODO change batch sizes to -1 , 256 , -1
-    train_x, train_y = dataset_tool.GetBatch(batch_size = -1,even_examples=True, y_labels_to_use=label_names, split_batch = True, split_one_hot = True, batch_source = source, shuffle=False)
+    train_x, train_y = dataset_tool.GetBatch(batch_size = -1,even_examples=False, y_labels_to_use=label_names, split_batch = True, split_one_hot = True, batch_source = source, shuffle=False)
     print("num train examples: "+str(len(train_x)))
 
 
-    standardized_train_x = dataset_tool.StandardizeImages(train_x)
+    #standardized_train_x = dataset_tool.StandardizeImages(train_x)
 
     #validate on up to 256 images only
-    source = "validation"
-    val_x, val_y = dataset_tool.GetBatch(batch_size = 256,even_examples=True, y_labels_to_use=label_names, split_batch = True,split_one_hot = True, batch_source = source)
-    print("num validation examples: "+str(len(val_x)))
+    #source = "validation"
+    #val_x, val_y = dataset_tool.GetBatch(batch_size = 256,even_examples=False, y_labels_to_use=label_names, split_batch = True,split_one_hot = True, batch_source = source)
+    #print("num validation examples: "+str(len(val_x)))
 
 
-    #load train data
+    #load test data
     source = "test"
-    test_x, test_y = dataset_tool.GetBatch(batch_size = -1,even_examples=True, y_labels_to_use=label_names, split_batch = True,split_one_hot = True, batch_source = source, shuffle=False)
+    test_x, test_y = dataset_tool.GetBatch(batch_size = -1,even_examples=False, y_labels_to_use=label_names, split_batch = True,split_one_hot = True, batch_source = source, shuffle=False)
     print("num test examples: "+str(len(test_x)))
     
 
-    print("calculating dataset mean")
+    print("loading train dataset mean")
     dataset_mean = dataset_tool.GetMean()
     print(dataset_mean)
 
@@ -140,7 +141,7 @@ if __name__ == "__main__":
 
 
     #INSTANTIATE MODEL
-    model_save_path_suffix = ""
+    model_save_path_suffix = ".h5"
     model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args =model_train_params)
     
 
@@ -152,11 +153,7 @@ if __name__ == "__main__":
     if(os.path.exists(model_load_path) == True and load_base_model_if_exist == True):
         model_instance.LoadModel(model_load_path)
     else:
-        if( ):
-            training_stats = framework_tool.TrainModel(model_instance,dataset_tool.StandardizeImages(train_x), train_y, model_train_params["batch_size"], model_train_params["num_train_steps"], val_x= dataset_tool.StandardizeImages(val_x), val_y=val_y)
-
-        else:
-            training_stats = framework_tool.TrainModel(model_instance,train_x, train_y, model_train_params["batch_size"], model_train_params["num_train_steps"], val_x= val_x, val_y=val_y)
+        raise Exception("Model does not exist: " + model_load_path)
 
     #FOR EACH EXPLANATION
     for explanation_name in explanation_names:
@@ -177,7 +174,7 @@ if __name__ == "__main__":
             explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
 
 
-    #INITAL TEST of MODEL
+        #INITAL TEST of MODEL
         test_results = [] # of the form: (proportion_of_deteriated_pixels, test_metrics) . test_metrics = [loss, accuracy] .
 
         if(normalise_data):
