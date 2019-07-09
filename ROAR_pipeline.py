@@ -25,7 +25,7 @@ import random
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 ###UPDATE FRAMEWORK PATH
-framework_path = "/media/harborned/ShutUpN/repos/dais/interpretability_framework"
+framework_path = "/home/richard/git/interpretability_framework"
 # framework_path = "/Users/harborned/Documents/repos/dais/interpretability_framework"
 
 sys.path.append(framework_path)
