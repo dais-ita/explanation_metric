@@ -66,7 +66,7 @@ if __name__ == "__main__":
     perturb_method = "random"
     perturb_method = "mean"
 
-    experiment_id=""
+    experiment_id="richard_"
 
     use_deletion_game = False
     if(use_deletion_game):
