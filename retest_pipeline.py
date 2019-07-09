@@ -15,7 +15,7 @@ import cv2
 import tensorflow as tf
 import random
 
-from ROAR_pipeline import CreatePixelListForAllData, LoadPixelListFromPath, SavePixelList, PerturbData, CreateGridPerturbationFunction, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList, GenerateRandomPixelWeights,DeteriorateImageWithRandomColour
+from ROAR_pipeline import CreatePixelListForAllData, LoadPixelListFromPath, SavePixelList, PerturbData, CreateGridPerturbationFunction, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList,DeteriorateImageWithRandomColour
 
 # INITIALISE FRAMEWORK
 ###UPDATE FRAMEWORK PATH
@@ -41,6 +41,21 @@ def SaveImage(image, output_path, flip_channels = False):
     im = Image.fromarray(output_image.astype(np.uint8))
     im.save(output_path)
 
+def GenerateSameRandomPixelWeights(images_shape, random_seed):
+    pixel_weight_size = list(images_shape[1:])
+    pixel_weight_size[-1] = 1
+    
+    dataset_pixel_weight_lists = []
+    random_generator = np.random.RandomState(random_seed)
+    pix_weights = random_generator.uniform(size=pixel_weight_size)
+
+    for image_i in range(images_shape[0]):
+        if(image_i % 100 == 0):
+            print("Generating Random Pixel List for:" + str(image_i))
+        pixel_weight_list = CreateOrderedPixelsList(pix_weights)
+        dataset_pixel_weight_lists.append(pixel_weight_list)
+        
+    return dataset_pixel_weight_lists
 
 
 if __name__ == "__main__":
@@ -77,6 +92,8 @@ if __name__ == "__main__":
     experiment_id+="_"+dataset_name+"_"+perturb_method
     load_base_model_if_exist = True
     save_pixel_list = True
+
+    random_seed = 42
 
     
     explicit_pixels_per_step = None #setting to None, causes a calculation of the number of pixels per step to be made based on deterioration_rate 
@@ -210,7 +227,7 @@ if __name__ == "__main__":
         
         if(generate_random_pixel_list):
             print("Generating Random Pixel List")
-            pixel_lists = GenerateRandomPixelWeights(x_deteriated.shape)
+            pixel_lists = GenerateSameRandomPixelWeights(x_deteriated.shape, random_seed)
             if(save_pixel_list):
                     print("saving pixel lists")
                     SavePixelList(experiment_id,explanation_name,pixel_lists)
