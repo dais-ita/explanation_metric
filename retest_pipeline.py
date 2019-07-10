@@ -15,6 +15,8 @@ import cv2
 import tensorflow as tf
 import random
 
+from experiment_param_dict import param_dict, param_set_name_list
+
 from ROAR_pipeline import CreatePixelListForAllData, LoadPixelListFromPath, SavePixelList, PerturbData, CreateGridPerturbationFunction, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList,DeteriorateImageWithRandomColour
 
 # INITIALISE FRAMEWORK
@@ -59,49 +61,39 @@ def GenerateSameRandomPixelWeights(images_shape, random_seed):
 
 
 if __name__ == "__main__":
+    param_set_name = sys.argv[1]
+    print(param_set_name)
+    params = param_dict[param_set_name]
+
     #INITIALISE EXPERIMENT PARAMETERS    
-    dataset_name = "Traffic Congestion Image Classification (Resized)"
-    dataset_name = "MNIST"
-    dataset_name = "CIFAR-10-original"
-    # dataset_name = "ImageNet"
-    
-    # model_name = "inception_v3_imagenet"
-    model_name = "vgg16_richard"
-    normalise_data = True
+    dataset_name = params["dataset_name"]
+    model_name = params["model_name"]
+    normalise_data = params["normalise_data"]
+    explanation_names = params["explanation_names"]
+    load_from_pixel_list_path_dict = params["load_from_pixel_list_path_dict"]
+    perturb_method = params["perturb_method"]
+    experiment_id = params["experiment_id"]
+    use_deletion_game = params["use_deletion_game"]
+    load_base_model_if_exist = params["load_base_model_if_exist"]
+    save_pixel_list = params["save_pixel_list"]
+    random_seed = params["random_seed"]
+    explicit_pixels_per_step = params["explicit_pixels_per_step"]
+    deterioration_rate = params["deterioration_rate"]
 
-    explanation_names = ["Shap","LIME","random"] # list os explanations to generate results for
-    load_from_pixel_list_path_dict = {}
-    #{
-    #    "LIME": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_LIME_1559235451.pkl")
-    #    ,"Shap": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_Shap_1559300187.pkl")
-    #    ,"random": os.path.join("pixel_lists","deletion_game_CIFAR-10_mean_random_1559235793.pkl")
-    #}
-
-    perturb_method = "grid"
-    perturb_method = "random"
-    perturb_method = "mean"
-
-    experiment_id="richard_"
-
-    use_deletion_game = False
     if(use_deletion_game):
         experiment_id += "deletion_game"
     else:
         experiment_id += "preservation_game"
-    
     experiment_id+="_"+dataset_name+"_"+perturb_method
-    load_base_model_if_exist = True
-    save_pixel_list = True
 
-    random_seed = 42
+    if explicit_pixels_per_step is None:
+        num_deterioration_steps = int(1./deterioration_rate)
+    else:
+        num_deterioration_steps = 100
 
-    
-    explicit_pixels_per_step = None #setting to None, causes a calculation of the number of pixels per step to be made based on deterioration_rate 
-    #explicit_pixels_per_step = 1
-
-    deterioration_rate = 0.05
-
-    num_deterioration_steps = 20
+    add_random = ""
+    if random_seed is not None:
+        add_random += "_"+str(random_seed)
 
     save_deteriorated_images_below_index = 10
     
@@ -174,13 +166,13 @@ if __name__ == "__main__":
 
     #FOR EACH EXPLANATION
     for explanation_name in explanation_names:
-        print("Generating Results for: " + explanation_name)
+        print("Generating Results for: " + explanation_name+add_random)
         load_from_pixel_list_path = ""
         
         if(explanation_name in load_from_pixel_list_path_dict):
             load_from_pixel_list_path = load_from_pixel_list_path_dict[explanation_name]
-
-        output_path=os.path.join("results",str(experiment_id)+"_"+explanation_name+"_results.csv")
+        
+        output_path=os.path.join("results",str(experiment_id)+"_"+explanation_name+add_random+"_results.csv")
         
         generate_random_pixel_list = False
         if(explanation_name == "random" and load_from_pixel_list_path == ""):
@@ -230,7 +222,7 @@ if __name__ == "__main__":
             pixel_lists = GenerateSameRandomPixelWeights(x_deteriated.shape, random_seed)
             if(save_pixel_list):
                     print("saving pixel lists")
-                    SavePixelList(experiment_id,explanation_name,pixel_lists)
+                    SavePixelList(experiment_id,explanation_name+add_random,pixel_lists)
 
         else:
             if(load_from_pixel_list_path != ""):
@@ -246,7 +238,7 @@ if __name__ == "__main__":
                     
                 if(save_pixel_list):
                     print("saving pixel lists")
-                    SavePixelList(experiment_id,explanation_name,pixel_lists)
+                    SavePixelList(experiment_id,explanation_name+add_random,pixel_lists)
 
 
     # EVALUATION
@@ -274,7 +266,7 @@ if __name__ == "__main__":
 
         #For each level of deterioration:
         for deterioration_step in range(num_deterioration_steps):
-            deterioration_output_path = str(experiment_id)+"_"+explanation_name+"_"+format(deterioration_step, '05d')+"_deterioration_results.csv"
+            deterioration_output_path = str(experiment_id)+"_"+explanation_name+add_random+"_"+format(deterioration_step, '05d')+"_deterioration_results.csv"
             deterioration_output_path = os.path.join("results","image_results",deterioration_output_path)
             
 
@@ -298,7 +290,7 @@ if __name__ == "__main__":
                 deterioration_output_string += ",".join(prediction_probs) +","+str(prediction) +","+str(np.argmax(test_y[img_i])) +"\n"
                 
                 if(img_i < save_deteriorated_images_below_index):
-                    save_output_path = os.path.join("deteriorated_images", experiment_id + "_" +explanation_name+"_"+ str(img_i) + "_" + str(deterioration_step) +".jpg")
+                    save_output_path = os.path.join("deteriorated_images", experiment_id + "_" +explanation_name+add_random+"_"+ str(img_i) + "_" + str(deterioration_step) +".png")
                     SaveImage(x_deteriated[img_i],save_output_path)
                 
                 ###paper results
@@ -321,7 +313,7 @@ if __name__ == "__main__":
         
         SaveExperimentResults(output_path,test_results)
 
-        paper_results_output_path = str(experiment_id)+"_"+explanation_name+"_results.csv"
+        paper_results_output_path = str(experiment_id)+"_"+explanation_name+add_random+"_results.csv"
         paper_results_output_path = os.path.join("paper_results",paper_results_output_path)
         paper_results_string = ",".join(["explanation_name"
         ,"ground_truth"
@@ -341,7 +333,7 @@ if __name__ == "__main__":
             res_string = ",".join( [str(v) for v in paper_results_dict[img_i]["results"] ] )
             paper_results_string += "\n"
             paper_results_string += ",".join(str(v) for v in [
-                explanation_name
+                explanation_name+add_random
                 ,paper_results_dict[img_i]["ground_truth"]
                 ,paper_results_dict[img_i]["original_prediction"]
                 ,img_i
