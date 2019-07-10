@@ -17,7 +17,7 @@ import random
 
 from experiment_param_dict import param_dict
 
-from ROAR_pipeline import CreatePixelListForAllData, LoadPixelListFromPath, SavePixelList, PerturbData, CreateGridPerturbationFunction, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList,DeteriorateImageWithRandomColour
+from ROAR_pipeline import CreatePixelListForAllData, LoadPixelListFromPath, SavePixelList, CreateGridPerturbationFunction, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList
 
 # INITIALISE FRAMEWORK
 ###UPDATE FRAMEWORK PATH
@@ -43,12 +43,12 @@ def SaveImage(image, output_path, flip_channels = False):
     im = Image.fromarray(output_image.astype(np.uint8))
     im.save(output_path)
 
-def GenerateSameRandomPixelWeights(images_shape, random_seed):
+def GenerateSameRandomPixelWeights(images_shape, rseed):
     pixel_weight_size = list(images_shape[1:])
     pixel_weight_size[-1] = 1
     
     dataset_pixel_weight_lists = []
-    random_generator = np.random.RandomState(random_seed)
+    random_generator = np.random.RandomState(rseed)
     pix_weights = random_generator.uniform(size=pixel_weight_size)
 
     for image_i in range(images_shape[0]):
@@ -59,6 +59,49 @@ def GenerateSameRandomPixelWeights(images_shape, random_seed):
         
     return dataset_pixel_weight_lists
 
+def DeteriorateImageWithRandomColour(img,x,y,rseed):
+    random_generator = np.random.RandomState(rseed)
+    img[x][y] = [random_generator.rand(),random_generator.rand(),random_generator.rand()]
+    
+    return img
+
+#PERTURBATION FUNCTIONS
+def PerturbImage(image,image_pixel_list,perturbation_function,deterioration_start_index,deterioration_end,rseed):
+    #generic perturbation mangement function that takes a specific perturbation function as an argument
+    deterioration_pixels = image_pixel_list[deterioration_start_index:deterioration_end]
+    
+    for px in deterioration_pixels:
+        if rseed is None:
+            image = perturbation_function(image, px[0], px[1])
+        else:
+            image = perturbation_function(image, px[0], px[1], rseed)
+        
+    return image
+
+def PerturbData(Xs,deterioration_proportion,dataset_pixel_lists,deterioration_step,deterioration_index_step,perturbation_function, deletion_game=True, total_num_deterioration_steps=20, rseed=None):
+    if(deletion_game):
+        print("Using deletion game metric")
+        deterioration_start_index = int(deterioration_step*deterioration_index_step)
+        deterioration_end = int(min(len(dataset_pixel_lists[0]), (deterioration_step+1)*deterioration_index_step))
+    else:
+        print("Using preservation game metric")
+        deterioration_start_index = int((total_num_deterioration_steps - (deterioration_step+1)) * deterioration_index_step)
+        deterioration_end = int(min(len(dataset_pixel_lists[0]), (total_num_deterioration_steps - deterioration_step) * deterioration_index_step))
+
+
+    modified_images = []
+    
+    total_imgs = len(Xs)
+    verbose_every_n_steps = 500
+    #TODO: Could be parallelized
+    for x_i in range(total_imgs):
+        if(x_i % verbose_every_n_steps == 0):
+            print("Deteriating Image: "+str(x_i)+ " to "+ str(min(x_i+verbose_every_n_steps, total_imgs))+"/" + str(total_imgs))
+            print("")
+        new_image = PerturbImage(Xs[x_i], dataset_pixel_lists[x_i],perturbation_function,deterioration_start_index,deterioration_end,rseed)
+        modified_images.append(new_image)
+    
+    return np.array(modified_images)
 
 if __name__ == "__main__":
     param_set_name = sys.argv[1]
