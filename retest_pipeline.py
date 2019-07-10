@@ -80,10 +80,14 @@ if __name__ == "__main__":
     explicit_pixels_per_step = params["explicit_pixels_per_step"]
     deterioration_rate = params["deterioration_rate"]
 
+    if explicit_pixels_per_step is not None:
+        experiment_id += str(explicit_pixels_per_step) + "px_"
+
     if(use_deletion_game):
         experiment_id += "deletion_game"
     else:
         experiment_id += "preservation_game"
+
     experiment_id+="_"+dataset_name+"_"+perturb_method
 
     if explicit_pixels_per_step is None:
