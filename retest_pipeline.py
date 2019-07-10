@@ -15,7 +15,7 @@ import cv2
 import tensorflow as tf
 import random
 
-from experiment_param_dict import param_dict, param_set_name_list
+from experiment_param_dict import param_dict
 
 from ROAR_pipeline import CreatePixelListForAllData, LoadPixelListFromPath, SavePixelList, PerturbData, CreateGridPerturbationFunction, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList,DeteriorateImageWithRandomColour
 
@@ -62,7 +62,7 @@ def GenerateSameRandomPixelWeights(images_shape, random_seed):
 
 if __name__ == "__main__":
     param_set_name = sys.argv[1]
-    print(param_set_name)
+    print("PARAM SET: " + param_set_name)
     params = param_dict[param_set_name]
 
     #INITIALISE EXPERIMENT PARAMETERS    
