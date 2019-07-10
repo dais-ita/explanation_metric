@@ -17,7 +17,7 @@ import random
 
 from experiment_param_dict import param_dict
 
-from ROAR_pipeline import CreatePixelListForAllData, LoadPixelListFromPath, SavePixelList, CreateGridPerturbationFunction, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList
+from ROAR_pipeline import CreatePixelListForAllData, LoadPixelListFromPath, SavePixelList, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList
 
 # INITIALISE FRAMEWORK
 ###UPDATE FRAMEWORK PATH
@@ -64,6 +64,20 @@ def DeteriorateImageWithRandomColour(img,x,y,rseed):
     img[x][y] = [random_generator.rand(),random_generator.rand(),random_generator.rand()]
     
     return img
+
+def CreateGridPerturbationFunction(grid_width=3,grid_height=3, pixel_operation_function=DeteriorateImageWithRandomColour):
+    grid_width_distance = int((grid_width-1) / 2)
+    grid_height_distance = int((grid_height-1) / 2)
+    print(grid_height_distance)
+    def DeteriorateGridOfImageWithRandomColour(img,x,y,rseed):
+        for width_modifier in range(-grid_width_distance,(grid_width_distance+1),1):
+            random_generator = np.random.RandomState(rseed)
+            for height_modifier in range(-grid_height_distance,(grid_height_distance+1),1):
+                img[x+width_modifier][y+height_modifier] = [random_generator.rand(),random_generator.rand(),random_generator.rand()]
+                # img = pixel_operation_function(img, x+width_modifier,y+height_modifier)
+        return img
+
+    return DeteriorateGridOfImageWithRandomColour
 
 #PERTURBATION FUNCTIONS
 def PerturbImage(image,image_pixel_list,perturbation_function,deterioration_start_index,deterioration_end,rseed):
@@ -325,7 +339,10 @@ if __name__ == "__main__":
             print("")
     
             #DELETE OR KEEP PHASE
-            x_deteriated = PerturbData(x_deteriated,deterioration_rate,pixel_lists,deterioration_step,deterioration_index_step,perturbation_function, deletion_game=use_deletion_game, total_num_deterioration_steps=num_deterioration_steps)
+            rs = None
+            if perturb_method != "mean":
+                rs = (deterioration_step * 159) + 951
+            x_deteriated = PerturbData(x_deteriated,deterioration_rate,pixel_lists,deterioration_step,deterioration_index_step,perturbation_function, deletion_game=use_deletion_game, total_num_deterioration_steps=num_deterioration_steps, rseed=rs)
             
             #RETEST PHASE
             x_prediction_probs, x_predictions = model_instance.Predict(dataset_tool.StandardizeImages(x_deteriated), return_prediction_scores = True)
