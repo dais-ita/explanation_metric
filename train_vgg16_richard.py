@@ -50,7 +50,7 @@ normalise_data = True
 model_train_params ={
     "learning_rate": 0.001
     ,"batch_size":64
-    ,"num_train_steps":150
+    ,"num_train_steps":250
     ,"experiment_id":1
 }
 
@@ -64,7 +64,7 @@ model_instance.model.compile(loss=keras.losses.categorical_crossentropy,
 
 results = dft.TrainModel(model_instance, \
                          dataset_tool.StandardizeImages(train_x), \
-                         train_y, 64, 150, \
+                         train_y, 64, 250, \
                          val_x=dataset_tool.StandardizeImages(val_x), \
                          val_y=val_y, \
                          early_stop=True, save_best_name="vgg16_richard-best")
