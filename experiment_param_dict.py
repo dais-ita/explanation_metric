@@ -1345,9 +1345,6 @@ param_dict = {
         "explicit_pixels_per_step": 1,
         "random_seed": 120
     },
-
-
-
     "88": { # randomBaseline-123, grid_perturb, preservation, 1pxPerStep
         "dataset_name": "CIFAR-10-original", # always the same
         "model_name": "vgg16_richard",       # always the same
