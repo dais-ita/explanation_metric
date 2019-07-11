@@ -88,7 +88,7 @@ def PerturbImage(image,image_pixel_list,perturbation_function,deterioration_star
         if rseed is None:
             image = perturbation_function(image, px[0], px[1])
         else:
-            image = perturbation_function(image, px[0], px[1], rseed)
+            image = perturbation_function(image, px[0], px[1], rseed+px)
         
     return image
 
