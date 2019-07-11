@@ -84,11 +84,11 @@ def PerturbImage(image,image_pixel_list,perturbation_function,deterioration_star
     #generic perturbation mangement function that takes a specific perturbation function as an argument
     deterioration_pixels = image_pixel_list[deterioration_start_index:deterioration_end]
     
-    for px in deterioration_pixels:
+    for idx, px in enumerate(deterioration_pixels):
         if rseed is None:
             image = perturbation_function(image, px[0], px[1])
         else:
-            image = perturbation_function(image, px[0], px[1], rseed+px)
+            image = perturbation_function(image, px[0], px[1], rseed+idx)
         
     return image
 
