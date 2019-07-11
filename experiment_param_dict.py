@@ -1666,7 +1666,7 @@ param_dict = {
         "explicit_pixels_per_step": 1,
         "random_seed": None
     },
-    "109": { # Shap&LIME, random_perturb, preservation, 1pxPerStep
+    "109": { # Shap&LIME, grid_perturb, preservation, 1pxPerStep
         "dataset_name": "CIFAR-10-original", # always the same
         "model_name": "vgg16_richard",       # always the same
         "normalise_data": True,              # always the same
