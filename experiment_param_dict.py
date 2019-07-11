@@ -1344,5 +1344,344 @@ param_dict = {
         "use_deletion_game": False,
         "explicit_pixels_per_step": 1,
         "random_seed": 120
-    }
+    },
+
+
+
+    "88": { # randomBaseline-123, grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": False,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 123
+    },
+    "89": { # randomBaseline-789, grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": False,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 234
+    },
+    "90": { # randomBaseline-890, grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": False,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 345
+    },
+    "91": { # randomBaseline-901, grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": False,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 456
+    },
+    "92": { # randomBaseline-120, grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": False,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 567
+    },
+    "93": { # randomBaseline-678, grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": False,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 678
+    },
+    "94": { # randomBaseline-789, grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": False,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 789
+    },
+    "95": { # randomBaseline-890, grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": False,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 890
+    },
+    "96": { # randomBaseline-901, grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": False,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 901
+    },
+    "97": { # randomBaseline-120, grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": False,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 120
+    },
+    "98": { # randomBaseline-123, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": True,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 123
+    },
+    "99": { # randomBaseline-789, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": True,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 234
+    },
+    "100": { # randomBaseline-890, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": True,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 345
+    },
+    "101": { # randomBaseline-901, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": True,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 456
+    },
+    "102": { # randomBaseline-120, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": True,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 567
+    },
+    "103": { # randomBaseline-678, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": True,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 678
+    },
+    "104": { # randomBaseline-789, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": True,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 789
+    },
+    "105": { # randomBaseline-890, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": True,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 890
+    },
+    "106": { # randomBaseline-901, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": True,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 901
+    },
+    "107": { # randomBaseline-120, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["random"],
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": True,
+        "explicit_pixels_per_step": 1,
+        "random_seed": 120
+    },
+    "108": { # Shap&LIME, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Shap","LIME"], # random
+        "load_from_pixel_list_path_dict": {
+            "LIME": os.path.join("pixel_lists","richard_preservation_game_CIFAR-10-original_mean_LIME_1562778871.pkl"),
+            "Shap": os.path.join("pixel_lists","richard_preservation_game_CIFAR-10-original_mean_Shap_1562776643.pkl"),
+        },
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None
+    },
+    "109": { # Shap&LIME, random_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Shap","LIME"], # random
+        "load_from_pixel_list_path_dict": {
+            "LIME": os.path.join("pixel_lists","richard_preservation_game_CIFAR-10-original_mean_LIME_1562778871.pkl"),
+            "Shap": os.path.join("pixel_lists","richard_preservation_game_CIFAR-10-original_mean_Shap_1562776643.pkl"),
+        },
+        "perturb_method": "grid",
+        "experiment_id": "richard_",
+        "use_deletion_game": False,
+        "explicit_pixels_per_step": 1,
+        "random_seed": None
+    },
 }
