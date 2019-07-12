@@ -70,8 +70,8 @@ def CreateGridPerturbationFunction(grid_width=3,grid_height=3, pixel_operation_f
     grid_height_distance = int((grid_height-1) / 2)
     print(grid_height_distance)
     def DeteriorateGridOfImageWithRandomColour(img,x,y,rseed):
+        random_generator = np.random.RandomState(rseed)
         for width_modifier in range(-grid_width_distance,(grid_width_distance+1),1):
-            random_generator = np.random.RandomState(rseed)
             for height_modifier in range(-grid_height_distance,(grid_height_distance+1),1):
                 if (x+width_modifier>=0) and (x+width_modifier<img.shape[0]) and (y+height_modifier>=0) and (y+height_modifier<img.shape[1]):
                     img[x+width_modifier][y+height_modifier] = [random_generator.rand(),random_generator.rand(),random_generator.rand()]
