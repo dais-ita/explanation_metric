@@ -176,11 +176,12 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
                     #tf.reset_default_graph() 
                     #tf.keras.backend.clear_session()
                     K.clear_session()
-                    gc.collect()
                     print("Releasing GPU")
                     cuda.select_device(0)
                     cuda.close()
+                    cuda.select_device(0)
                     print("GPU released")
+                    gc.collect()
                     if model_name is None:
                         raise Exception("model_name must be specified")
                     if model_save_path_suffix is None:
