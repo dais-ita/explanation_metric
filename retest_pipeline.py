@@ -14,7 +14,9 @@ except:
 import cv2
 
 import tensorflow as tf
+from keras import backend as K
 import random
+from numba import cuda
 
 from experiment_param_dict import param_dict
 
@@ -171,13 +173,14 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
                     model_load_path = model_instance.model_dir
                     del model_instance
                     del explanation_instance
-                    tf.reset_default_graph() 
-                    tf.keras.backend.clear_session()
+                    #tf.reset_default_graph() 
+                    #tf.keras.backend.clear_session()
+                    K.clear_session()
                     gc.collect()
-                    # print("Releasing GPU")
-                    # cuda.select_device(0)
-                    # cuda.close()
-                    # print("GPU released")
+                    print("Releasing GPU")
+                    cuda.select_device(0)
+                    cuda.close()
+                    print("GPU released")
                     if model_name is None:
                         raise Exception("model_name must be specified")
                     if model_save_path_suffix is None:
