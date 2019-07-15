@@ -177,17 +177,18 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
                     print("Resetting Session")
                     model_load_path = model_instance.model_dir
                     
-                    sess = get_session()
-                    clear_session()
-                    sess.close()
-                    sess = get_session()
-
                     try:
                         del model_instance
                         del explanation_instance
                     except:
                         print("FAILED TO DELETE MODEL AND EXPLANATION INSTANCE")
                         pass
+                    
+                    sess = get_session()
+                    clear_session()
+                    tf.reset_default_graph()
+                    sess.close()
+                    #sess = get_session()
 
                     print("GARBAGE COLLECTION: " + str(gc.collect()))
 
@@ -221,7 +222,8 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
         
         dataset_pixel_weight_lists.append(pixel_weight_list)
 
-
+    # Reload the model in case we have stripped the end off it
+    model_instance.LoadModel(model_load_path)
     return dataset_pixel_weight_lists
 
 
