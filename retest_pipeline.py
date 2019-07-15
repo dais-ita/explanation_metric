@@ -2,6 +2,7 @@ import sys
 import os
 import time
 import math
+import gc
 
 import numpy as np
 
@@ -172,6 +173,7 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
                     del explanation_instance
                     tf.reset_default_graph() 
                     tf.keras.backend.clear_session()
+                    gc.collect()
                     # print("Releasing GPU")
                     # cuda.select_device(0)
                     # cuda.close()
