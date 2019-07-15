@@ -38,10 +38,8 @@ np.random.seed(42)
 tf.set_random_seed(1234)
 random.seed(1234)
 
-# Reset Keras Session
+# Reset Keras Session code was
 # Flagrantly thieved from here: https://github.com/keras-team/keras/issues/12625 / fastai forums!
-def reset_keras(model, explainer):
-    
 
 def SaveImage(image, output_path, flip_channels = False):
     output_image = image
