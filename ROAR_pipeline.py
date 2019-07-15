@@ -83,7 +83,7 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
         "num_samples":100,
         "num_features":300,
         "min_weight":0.01, 
-        "num_background_samples":512,
+        "num_background_samples":500,
         "train_x":train_x,
         "train_y":train_y,
         "max_n_influence_images":9,
@@ -99,7 +99,7 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
 
     verbose_every_n_steps = 5
     
-    reset_session_every = 1 
+    reset_session_every = 5
     #Some explanation implementations cause slow down if they are used repeatidly on the same session.
     #if reset_session_every is trTrueue on the explanation instance, then the session will be cleared and refreshed every 'reset_session_every' steps.
 
