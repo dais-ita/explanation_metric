@@ -1681,4 +1681,19 @@ param_dict = {
         "explicit_pixels_per_step": 1,
         "random_seed": None
     },
+    "110": { # DeepTaylor, mean_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "mean",
+        "experiment_id": "richard_",
+        "use_deletion_game": True,
+        "explicit_pixels_per_step": 1,
+        "random_seed": None
+    }
 }
