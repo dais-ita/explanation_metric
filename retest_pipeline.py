@@ -192,10 +192,10 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
                     print("GARBAGE COLLECTION: " + str(gc.collect()))
 
                     # use the same config as you used to create the session
-                    config = tensorflow.ConfigProto()
+                    config = tf.ConfigProto()
                     config.gpu_options.per_process_gpu_memory_fraction = 1
                     config.gpu_options.visible_device_list = "0"
-                    set_session(tensorflow.Session(config=config))
+                    set_session(tf.Session(config=config))
 
                     if model_name is None:
                         raise Exception("model_name must be specified")
