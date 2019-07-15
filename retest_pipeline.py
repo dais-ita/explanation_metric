@@ -17,7 +17,7 @@ import random
 
 from experiment_param_dict import param_dict
 
-from ROAR_pipeline import CreatePixelListForAllData, LoadPixelListFromPath, SavePixelList, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList
+from ROAR_pipeline import LoadPixelListFromPath, SavePixelList, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList
 
 # INITIALISE FRAMEWORK
 ###UPDATE FRAMEWORK PATH
@@ -117,6 +117,93 @@ def PerturbData(Xs,deterioration_proportion,dataset_pixel_lists,deterioration_st
         modified_images.append(new_image)
     
     return np.array(modified_images)
+
+
+def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=None, train_x = None, train_y=None, denormalise_function=None, model_name=None,model_save_path_suffix=None,dataset_json=None):
+    # if creating pixel list for data which isn't the training data, you must also pass the training data so it can be used by some explanation types. 
+    # If training x and y not passed then data_x and data_y are the datasets training data.
+    if train_x is None:
+        train_x = data_x
+    
+    if train_y is None:
+        train_y = data_y
+    #default arguments for various explanation techniques 
+    if(additional_args is None):
+        additional_args = {
+        "num_samples":100,
+        "num_features":300,
+        "min_weight":0.01, 
+        "num_background_samples":500,
+        "train_x":train_x,
+        "train_y":train_y,
+        "max_n_influence_images":9,
+        "dataset_name":dataset_name,
+        "background_image_pool":train_x,
+        }
+    if(not denormalise_function is None):
+        additional_args["denormalise_function"] = denormalise_function
+    
+    total_imgs = len(data_x)
+    dataset_pixel_weight_lists = [] 
+    start = time.clock()
+
+    verbose_every_n_steps = 5
+    
+    reset_session_every = 5
+    #Some explanation implementations cause slow down if they are used repeatidly on the same session.
+    #if reset_session_every is trTrueue on the explanation instance, then the session will be cleared and refreshed every 'reset_session_every' steps.
+
+    #TODO: Could be parallelized
+    for image_i in range(total_imgs):
+        if(image_i % verbose_every_n_steps == 0):
+            print(time.clock() - start)
+
+            start = time.clock()
+            print("Generating Explanation for Image: "+str(image_i)+ " to "+ str(min(image_i+verbose_every_n_steps, total_imgs))+"/" + str(total_imgs))
+            print("")
+        
+        if(image_i % reset_session_every == 0):
+            if(explanation_instance.requires_fresh_session==True):
+                if(not framework_tool is None):
+                    print("___")
+                    print("Resetting Session")
+                    model_load_path = model_instance.model_dir
+                    del model_instance
+                    del explanation_instance
+                    tf.reset_default_graph() 
+                    tf.keras.backend.clear_session()
+                    # print("Releasing GPU")
+                    # cuda.select_device(0)
+                    # cuda.close()
+                    # print("GPU released")
+                    if model_name is None:
+                        raise Exception("model_name must be specified")
+                    if model_save_path_suffix is None:
+                        raise Exception("model_save_path_suffix must be specified")
+                    if dataset_json is None:
+                        raise Exception("dataset_json must be specified")
+                    model_instance = framework_tool.InstantiateModelFromName(model_name,model_save_path_suffix,dataset_json,additional_args = {"learning_rate":model_train_params["learning_rate"]})
+                    model_instance.LoadModel(model_load_path)
+                    explanation_instance = framework_tool.InstantiateExplanationFromName(explanation_name,model_instance)
+                    print("session restarted")
+                    print("___")
+                    print("")    
+        
+        additional_outputs = None
+        
+        
+        image_x = data_x[image_i]
+        _, _, _, additional_outputs = explanation_instance.Explain(image_x,additional_args=additional_args) 
+        
+        attribution_map =  np.array(additional_outputs["attribution_map"])
+        pixel_weight_list = CreateOrderedPixelsList(attribution_map)
+        
+        dataset_pixel_weight_lists.append(pixel_weight_list)
+
+
+    return dataset_pixel_weight_lists
+
+
 
 if __name__ == "__main__":
     param_set_name = sys.argv[1]
@@ -294,9 +381,9 @@ if __name__ == "__main__":
             else:
                 print("Creating Pixel List")
                 if(normalise_data):
-                    pixel_lists = CreatePixelListForAllData(dataset_tool.StandardizeImages(x_deteriated), test_y, dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=framework_tool, train_x=dataset_tool.StandardizeImages(train_x), train_y=train_y, denormalise_function=denormalise_function)
+                    pixel_lists = CreatePixelListForAllData(dataset_tool.StandardizeImages(x_deteriated), test_y, dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=framework_tool, train_x=dataset_tool.StandardizeImages(train_x), train_y=train_y, denormalise_function=denormalise_function, model_name=model_name,model_save_path_suffix=model_save_path_suffix,dataset_json=dataset_json)
                 else:
-                    pixel_lists = CreatePixelListForAllData(x_deteriated, test_y, dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=framework_tool, train_x=train_x, train_y=train_y)
+                    pixel_lists = CreatePixelListForAllData(x_deteriated, test_y, dataset_name, model_instance, explanation_instance,additional_args=None,framework_tool=framework_tool, train_x=train_x, train_y=train_y, model_name=model_name,model_save_path_suffix=model_save_path_suffix,dataset_json=dataset_json)
                     
                 if(save_pixel_list):
                     print("saving pixel lists")
