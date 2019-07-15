@@ -16,7 +16,9 @@ import cv2
 import tensorflow as tf
 from keras import backend as K
 import random
-from numba import cuda
+from keras.backend.tensorflow_backend import set_session
+from keras.backend.tensorflow_backend import clear_session
+from keras.backend.tensorflow_backend import get_session
 
 from experiment_param_dict import param_dict
 
@@ -35,6 +37,11 @@ from DaisFrameworkTool import DaisFrameworkTool
 np.random.seed(42)
 tf.set_random_seed(1234)
 random.seed(1234)
+
+# Reset Keras Session
+# Flagrantly thieved from here: https://github.com/keras-team/keras/issues/12625 / fastai forums!
+def reset_keras(model, explainer):
+    
 
 def SaveImage(image, output_path, flip_channels = False):
     output_image = image
@@ -171,17 +178,27 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
                     print("___")
                     print("Resetting Session")
                     model_load_path = model_instance.model_dir
-                    del model_instance
-                    del explanation_instance
-                    #tf.reset_default_graph() 
-                    #tf.keras.backend.clear_session()
-                    K.clear_session()
-                    print("Releasing GPU")
-                    cuda.select_device(0)
-                    cuda.close()
-                    cuda.select_device(0)
-                    print("GPU released")
-                    gc.collect()
+                    
+                    sess = get_session()
+                    clear_session()
+                    sess.close()
+                    sess = get_session()
+
+                    try:
+                        del model_instance
+                        del explanation_instance
+                    except:
+                        print("FAILED TO DELETE MODEL AND EXPLANATION INSTANCE")
+                        pass
+
+                    print("GARBAGE COLLECTION: " + str(gc.collect()))
+
+                    # use the same config as you used to create the session
+                    config = tensorflow.ConfigProto()
+                    config.gpu_options.per_process_gpu_memory_fraction = 1
+                    config.gpu_options.visible_device_list = "0"
+                    set_session(tensorflow.Session(config=config))
+
                     if model_name is None:
                         raise Exception("model_name must be specified")
                     if model_save_path_suffix is None:
