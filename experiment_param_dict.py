@@ -1681,19 +1681,214 @@ param_dict = {
         "explicit_pixels_per_step": 1,
         "random_seed": None
     },
-    "110": { # DeepTaylor, mean_perturb, deletion, 1pxPerStep
+    "110": { # InputTimesGradient, mean_perturb, deletion, 1pxPerStep
         "dataset_name": "CIFAR-10-original", # always the same
         "model_name": "vgg16_richard",       # always the same
         "normalise_data": True,              # always the same
         "load_base_model_if_exist": True,    # always the same
-        "save_pixel_list": False,            # always the same
+        "save_pixel_list": True,            # always the same
         "deterioration_rate": 0.05,          # always the same
-        "explanation_names": ["DeepTaylor"], # random
+        "explanation_names": ["InputTimesGradient"], # random
         "load_from_pixel_list_path_dict": {},
         "perturb_method": "mean",
         "experiment_id": "richard_",
         "use_deletion_game": True,
         "explicit_pixels_per_step": 1,
         "random_seed": None
+    },
+    "111": { # DeepTaylor, mean_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": True,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "mean", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "112": { # InputTimesGradient&DeepTaylor, mean_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["InputTimesGradient","DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {
+            "InputTimesGradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_InputTimesGradient_1563244779.pkl"),
+            "DeepTaylor": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_DeepTaylor_1563260594.pkl")
+        },
+        "perturb_method": "mean", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "113": { # InputTimesGradient&DeepTaylor, mean_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["InputTimesGradient","DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {
+            "InputTimesGradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_InputTimesGradient_1563244779.pkl"),
+            "DeepTaylor": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_DeepTaylor_1563260594.pkl")
+        },
+        "perturb_method": "mean", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": False, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "114": { # InputTimesGradient&DeepTaylor, rand_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["InputTimesGradient","DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {
+            "InputTimesGradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_InputTimesGradient_1563244779.pkl"),
+            "DeepTaylor": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_DeepTaylor_1563260594.pkl")
+        },
+        "perturb_method": "random", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "115": { # InputTimesGradient&DeepTaylor, rand_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["InputTimesGradient","DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {
+            "InputTimesGradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_InputTimesGradient_1563244779.pkl"),
+            "DeepTaylor": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_DeepTaylor_1563260594.pkl")
+        },
+        "perturb_method": "random", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": False, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "116": { # InputTimesGradient&DeepTaylor, mean_perturb, deletion, percentPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["InputTimesGradient","DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {
+            "InputTimesGradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_InputTimesGradient_1563244779.pkl"),
+            "DeepTaylor": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_DeepTaylor_1563260594.pkl")
+        },
+        "perturb_method": "mean", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": None,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "117": { # InputTimesGradient&DeepTaylor, mean_perturb, preservation, percentPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["InputTimesGradient","DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {
+            "InputTimesGradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_InputTimesGradient_1563244779.pkl"),
+            "DeepTaylor": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_DeepTaylor_1563260594.pkl")
+        },
+        "perturb_method": "mean", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": False, # False
+        "explicit_pixels_per_step": None,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "118": { # InputTimesGradient&DeepTaylor, rand_perturb, deletion, percentPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["InputTimesGradient","DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {
+            "InputTimesGradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_InputTimesGradient_1563244779.pkl"),
+            "DeepTaylor": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_DeepTaylor_1563260594.pkl")
+        },
+        "perturb_method": "random", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": None,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "119": { # InputTimesGradient&DeepTaylor, mean_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["InputTimesGradient","DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {
+            "InputTimesGradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_InputTimesGradient_1563244779.pkl"),
+            "DeepTaylor": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_DeepTaylor_1563260594.pkl")
+        },
+        "perturb_method": "random", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": False, # False
+        "explicit_pixels_per_step": None,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "120": { # InputTimesGradient&DeepTaylor, grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["InputTimesGradient","DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {
+            "InputTimesGradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_InputTimesGradient_1563244779.pkl"),
+            "DeepTaylor": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_DeepTaylor_1563260594.pkl")
+        },
+        "perturb_method": "grid", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "121": { # InputTimesGradient&DeepTaylor, grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["InputTimesGradient","DeepTaylor"], # random
+        "load_from_pixel_list_path_dict": {
+            "InputTimesGradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_InputTimesGradient_1563244779.pkl"),
+            "DeepTaylor": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_DeepTaylor_1563260594.pkl")
+        },
+        "perturb_method": "grid", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": False, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
     }
 }
