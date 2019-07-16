@@ -1905,5 +1905,175 @@ param_dict = {
         "use_deletion_game": True, # False
         "explicit_pixels_per_step": 1,
         "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "123": { # Gradient(sensitivity), mean_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Gradient"],   # random
+        "load_from_pixel_list_path_dict": {
+            "Gradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_Gradient_1563289738.pkl")
+        },
+        "perturb_method": "mean", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "124": { # Gradient(sensitivity), mean_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Gradient"],   # random
+        "load_from_pixel_list_path_dict": {
+            "Gradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_Gradient_1563289738.pkl")
+        },
+        "perturb_method": "mean", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": False, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "125": { # Gradient(sensitivity), rand_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Gradient"],   # random
+        "load_from_pixel_list_path_dict": {
+            "Gradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_Gradient_1563289738.pkl")
+        },
+        "perturb_method": "random", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "126": { # Gradient(sensitivity), rand_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Gradient"],   # random
+        "load_from_pixel_list_path_dict": {
+            "Gradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_Gradient_1563289738.pkl")
+        },
+        "perturb_method": "random", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": False, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "127": { # Gradient(sensitivity), mean_perturb, deletion, percentPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Gradient"],   # random
+        "load_from_pixel_list_path_dict": {
+            "Gradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_Gradient_1563289738.pkl")
+        },
+        "perturb_method": "mean", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": None,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "128": { # Gradient(sensitivity), mean_perturb, preservation, percentPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Gradient"],   # random
+        "load_from_pixel_list_path_dict": {
+            "Gradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_Gradient_1563289738.pkl")
+        },
+        "perturb_method": "mean", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": False, # False
+        "explicit_pixels_per_step": None,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "129": { # Gradient(sensitivity), rand_perturb, deletion, percentPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Gradient"],   # random
+        "load_from_pixel_list_path_dict": {
+            "Gradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_Gradient_1563289738.pkl")
+        },
+        "perturb_method": "random", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": None,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "130": { # Gradient(sensitivity), mean_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Gradient"],   # random
+        "load_from_pixel_list_path_dict": {
+            "Gradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_Gradient_1563289738.pkl")
+        },
+        "perturb_method": "random", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": False, # False
+        "explicit_pixels_per_step": None,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "131": { # Gradient(sensitivity), grid_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Gradient"],   # random
+        "load_from_pixel_list_path_dict": {
+            "Gradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_Gradient_1563289738.pkl")
+        },
+        "perturb_method": "grid", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "132": { # Gradient(sensitivity), grid_perturb, preservation, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": False,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Gradient"],   # random
+        "load_from_pixel_list_path_dict": {
+            "Gradient": os.path.join("pixel_lists", "richard_1px_deletion_game_CIFAR-10-original_mean_Gradient_1563289738.pkl")
+        },
+        "perturb_method": "grid", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": False, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
     }
 }
