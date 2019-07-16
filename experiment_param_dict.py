@@ -1891,7 +1891,7 @@ param_dict = {
         "explicit_pixels_per_step": 1,
         "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
     },
-    "111": { # Gradient(sensitivity), mean_perturb, deletion, 1pxPerStep
+    "122": { # Gradient(sensitivity), mean_perturb, deletion, 1pxPerStep
         "dataset_name": "CIFAR-10-original", # always the same
         "model_name": "vgg16_richard",       # always the same
         "normalise_data": True,              # always the same
