@@ -1890,5 +1890,20 @@ param_dict = {
         "use_deletion_game": False, # False
         "explicit_pixels_per_step": 1,
         "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
+    },
+    "111": { # Gradient(sensitivity), mean_perturb, deletion, 1pxPerStep
+        "dataset_name": "CIFAR-10-original", # always the same
+        "model_name": "vgg16_richard",       # always the same
+        "normalise_data": True,              # always the same
+        "load_base_model_if_exist": True,    # always the same
+        "save_pixel_list": True,            # always the same
+        "deterioration_rate": 0.05,          # always the same
+        "explanation_names": ["Gradient"], # random
+        "load_from_pixel_list_path_dict": {},
+        "perturb_method": "mean", # random, grid
+        "experiment_id": "richard_",
+        "use_deletion_game": True, # False
+        "explicit_pixels_per_step": 1,
+        "random_seed": None # 123, 234, 345, 456, 567, 678, 789, 890, 901, 120
     }
 }
