@@ -20,7 +20,7 @@ from keras.backend.tensorflow_backend import set_session
 from keras.backend.tensorflow_backend import clear_session
 from keras.backend.tensorflow_backend import get_session
 
-from experiment_param_dict import param_dict
+from experiment_param_dict_rerun import param_dict
 
 from ROAR_pipeline import LoadPixelListFromPath, SavePixelList, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList
 
