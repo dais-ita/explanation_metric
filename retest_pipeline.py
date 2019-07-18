@@ -108,8 +108,8 @@ def PerturbData(Xs,deterioration_proportion,dataset_pixel_lists,deterioration_st
         deterioration_end = int(min(len(dataset_pixel_lists[0]), (deterioration_step+1)*deterioration_index_step))
     else:
         print("Using preservation game metric")
-        deterioration_start_index = int((total_num_deterioration_steps - (deterioration_step+1)) * deterioration_index_step)
-        deterioration_end = int(min(len(dataset_pixel_lists[0]), (total_num_deterioration_steps - deterioration_step) * deterioration_index_step))
+        deterioration_start_index = max(int(len(dataset_pixel_lists[0]) - ((deterioration_step+1) * deterioration_index_step)),0)
+        deterioration_end = int(min(len(dataset_pixel_lists[0]), len(dataset_pixel_lists[0]) - (deterioration_step * deterioration_index_step)))
 
 
     modified_images = []
