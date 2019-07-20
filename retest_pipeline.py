@@ -267,7 +267,7 @@ if __name__ == "__main__":
     if random_seed is not None:
         add_random += "_"+str(random_seed)
 
-    save_deteriorated_images_below_index = 10
+    save_deteriorated_images_below_index = 1
     
     model_train_params ={
     "learning_rate": 0.001
