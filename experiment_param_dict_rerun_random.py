@@ -1,4 +1,4 @@
-{'0': {'dataset_name': 'CIFAR-10-original',
+param_dict = {'0': {'dataset_name': 'CIFAR-10-original',
   'model_name': 'vgg16_richard',
   'normalise_data': True,
   'load_base_model_if_exist': True,
