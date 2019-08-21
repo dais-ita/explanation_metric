@@ -125,3 +125,10 @@ results
 monte_carlo_results/
 sample_deteriorated_images/
 
+*.pdf
+*.png
+paper_results
+*.ipynb
+paper_results_figures
+*.gz
+paper_results_old
