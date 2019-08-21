@@ -20,7 +20,7 @@ from keras.backend.tensorflow_backend import set_session
 from keras.backend.tensorflow_backend import clear_session
 from keras.backend.tensorflow_backend import get_session
 
-from experiment_param_dict_edge_detect import param_dict
+from experiment_param_dict_abs import param_dict
 
 from ROAR_pipeline import LoadPixelListFromPath, SavePixelList, CreateConstantPeturbFunction, SaveExperimentResults, CreateOrderedPixelsList
 
@@ -62,7 +62,7 @@ def GenerateSameRandomPixelWeights(images_shape, rseed):
     for image_i in range(images_shape[0]):
         if(image_i % 100 == 0):
             print("Generating Random Pixel List for:" + str(image_i))
-        pixel_weight_list = CreateOrderedPixelsList(pix_weights)
+        pixel_weight_list = CreateOrderedPixelsList(pix_weights,abs=True)
         dataset_pixel_weight_lists.append(pixel_weight_list)
         
     return dataset_pixel_weight_lists

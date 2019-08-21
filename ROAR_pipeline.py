@@ -55,7 +55,7 @@ def GenerateRandomPixelWeights(images_shape):
     return dataset_pixel_weight_lists
 
 
-def CreateOrderedPixelsList(attribution_map):
+def CreateOrderedPixelsList(attribution_map, abs=False):
     pixel_weight_list = []
     for i in range(attribution_map.shape[0]):
         for j in range(attribution_map.shape[1]):
@@ -64,6 +64,8 @@ def CreateOrderedPixelsList(attribution_map):
                 attribution_value = sum(attribution_map[i][j])
             else:
                 attribution_value = attribution_map[i][j]
+            if abs:
+                attribution_value = np.abs(attribution_value)
             pixel_weight_list.append( (i,j,attribution_value) )
     #TODO: confirm not taking the abs is correct
     return sorted(pixel_weight_list,key=lambda x: x[2],reverse=True)
@@ -149,7 +151,7 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
 
 
 def SavePixelList(dataset_name,explanation_name,pixel_lists):
-    pixel_out_path = os.path.join("pixel_lists",dataset_name+"_"+explanation_name+"_"+str(int(time.time()))+".pkl")
+    pixel_out_path = os.path.join("pixel_lists",dataset_name+"_"+explanation_name+"_abs_"+str(int(time.time()))+".pkl")
     with open(pixel_out_path,"wb") as f:
         pickle.dump(pixel_lists, f)
 
