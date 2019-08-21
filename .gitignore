@@ -127,8 +127,8 @@ sample_deteriorated_images/
 
 *.pdf
 *.png
-paper_results
+paper_results/
 *.ipynb
-paper_results_figures
+paper_results_figures/
 *.gz
-paper_results_old
+paper_results_old/
