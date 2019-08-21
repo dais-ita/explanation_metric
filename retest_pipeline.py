@@ -223,7 +223,7 @@ def CreatePixelListForAllData(data_x, data_y, dataset_name, model_instance, expl
         dataset_pixel_weight_lists.append(pixel_weight_list)
 
     # Reload the model in case we have stripped the end off it
-    model_instance.LoadModel(model_load_path)
+    #model_instance.LoadModel(model_load_path)
     return dataset_pixel_weight_lists
 
 
@@ -267,7 +267,7 @@ if __name__ == "__main__":
     if random_seed is not None:
         add_random += "_"+str(random_seed)
 
-    save_deteriorated_images_below_index = 1
+    save_deteriorated_images_below_index = 5
     
     model_train_params ={
     "learning_rate": 0.001
